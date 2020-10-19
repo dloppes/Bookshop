@@ -3,29 +3,29 @@
 <readers>
 
 	<reader id="01">
-	<fname>Daniel</fname>
-	<lname>Lopes</lname>
+	<fName>Daniel</fName>
+	<lName>Lopes</lName>
 	<email>daniel@cct.ie</email>
 	<phone>083000621</phone>
 	</reader>
 	
 	<reader id="02">
-	<fname>Mary</fname>
-	<lname>Monroe</lname>
+	<fName>Mary</fName>
+	<lName>Monroe</lName>
 	<email>mary@cct.ie</email>
 	<phone>0856555161</phone>
 	</reader>
 	
 	<reader id="03">
-	<fname>Elvis</fname>
-	<lname>Presley</lname>
+	<fName>Elvis</fName>
+	<lName>Presley</lName>
 	<email>elvis@cct.ie</email>
 	<phone>0870489849</phone>
 	</reader>
 	
 	<reader id="04">
-	<fname>Jean</fname>
-	<lname>Castro</lname>
+	<fName>Jean</fName>
+	<lName>Castro</lName>
 	<email>jcastro@cct.ie</email>
 	<phone>08821616155</phone>
 	</reader> 

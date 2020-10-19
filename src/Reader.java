@@ -3,13 +3,13 @@ import java.util.Scanner;
 public class Reader {
 
 	Scanner scanner = new Scanner(System.in);
-	protected int id;
+	protected String id;
 	protected String fName;
 	protected String lName;
 	protected String email;
 	protected String phoneNumber;
 
-	public Reader(int id, String fName, String lName, String email, String phoneNumber) {
+	public Reader(String id, String fName, String lName, String email, String phoneNumber) {
 
 		this.id = id;
 		this.fName = fName;

@@ -5,12 +5,12 @@ public class CLI {
 	Scanner scanner = new Scanner(System.in);
 	Book book = new Book();
 	Reader reader = new Reader();
-	Database database = new Database();
+	
 
 	public CLI() {
 		// TODO Auto-generated constructor stub
 
-		//database.readBooksFile();
+		Database database = new Database();
 		welcomeMenu();
 	}
 
