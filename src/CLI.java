@@ -5,7 +5,6 @@ public class CLI {
 	Scanner scanner = new Scanner(System.in);
 	Book book = new Book();
 	Reader reader = new Reader();
-	
 
 	public CLI() {
 		// TODO Auto-generated constructor stub
@@ -22,8 +21,6 @@ public class CLI {
 
 		String input = scanner.next();
 
-		menuValidator(input);
-
 		if (input.equals("1")) {
 
 			// the value got from the method books menu is stored in the option
@@ -34,6 +31,11 @@ public class CLI {
 		if (input.equals("2")) {
 			readerMenu();
 
+		} else {
+
+			System.out.println("----------------------------------------------------------------");
+			System.out.println("Please select a valid option! Only numbers 1 or 2 are accepted");
+			welcomeMenu();
 		}
 
 	}
@@ -126,8 +128,7 @@ public class CLI {
 			searchReader();
 		} else if (option.equals("2")) {
 			reader.listOfReaders();
-		}
-		else if (option.equals("3")) {
+		} else if (option.equals("3")) {
 			System.out.println("--------------------------------------------------------");
 			welcomeMenu();
 		}
@@ -148,13 +149,13 @@ public class CLI {
 			System.out.println("Please select a valid option! Only numbers 1 or 3 are accepted");
 			searchReader();
 		}
-		
-		else if(searchBy.equals("1")) {
+
+		else if (searchBy.equals("1")) {
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please insert ID number:");
 		}
-		
-		else if(searchBy.equals("2")) {
+
+		else if (searchBy.equals("2")) {
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please insert Name:");
 		}
@@ -163,25 +164,6 @@ public class CLI {
 			System.out.println("--------------------------------------------------------");
 			welcomeMenu();
 		}
-
-	}
-
-	public void menuValidator(String input) {
-
-		/*
-		 * As I will have multiple times where I have to check between two options I
-		 * this method will check it and returns if the option is valid
-		 */
-
-		boolean result = false;
-
-		if (!input.matches("[1-2]+")) {
-			result = false;
-			System.out.println("----------------------------------------------------------------");
-			System.out.println("Please select a valid option! Only numbers 1 or 2 are accepted");
-			welcomeMenu();
-		}
-		result = true;
 
 	}
 
