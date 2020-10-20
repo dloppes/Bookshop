@@ -3,13 +3,14 @@ import java.util.Scanner;
 public class Reader {
 
 	Scanner scanner = new Scanner(System.in);
-	protected String id;
+	protected Database database = new Database();
+	protected int id;
 	protected String fName;
 	protected String lName;
 	protected String email;
 	protected String phoneNumber;
 
-	public Reader(String id, String fName, String lName, String email, String phoneNumber) {
+	public Reader(int id, String fName, String lName, String email, String phoneNumber) {
 
 		this.id = id;
 		this.fName = fName;
@@ -35,11 +36,7 @@ public class Reader {
 
 	}
 
-	public void listOfReaders() {
-		System.out.println("I am glad you are here!");
-	}
-
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 

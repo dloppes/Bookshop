@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 public class CLI {
 
+	protected Database database = new Database();
 	Scanner scanner = new Scanner(System.in);
 	Book book = new Book();
 	Reader reader = new Reader();
@@ -9,7 +10,8 @@ public class CLI {
 	public CLI() {
 		// TODO Auto-generated constructor stub
 
-		Database database = new Database();
+		database.readBooksFile();
+		database.readReadersFile();
 		welcomeMenu();
 	}
 
@@ -62,10 +64,28 @@ public class CLI {
 
 		else if (option.equals("2")) {
 
+			String selected;
+			do {
+				System.out.println("------------------------------------------");
+				System.out.println("How would you like the list ordered by:");
+				System.out.println("*** Only numbers from 1 to 3 are accepted ***");
+				System.out.println("1 - By Title");
+				System.out.println("2 - By Author");
+				System.out.println("3 - Return to the main Menu");
+				selected = scanner.next();
+			} while (reader.validateThreeOptions(selected) == false);
+
+			if (selected.equals("1")) {
+				database.sortBooksList("title");
+			} else if (selected.equals("2")) {
+				database.sortBooksList("author");
+			} else if (selected.equals("3")) {
+				booksMenu();
+			}
 		}
 
 		else if (option.equals("3")) {
-
+			booksMenu();
 		}
 
 		else if (option.equals("4")) {
@@ -127,7 +147,25 @@ public class CLI {
 		} else if (option.equals("1")) {
 			searchReader();
 		} else if (option.equals("2")) {
-			reader.listOfReaders();
+			String selected;
+			do {
+				System.out.println("------------------------------------------");
+				System.out.println("How would you like the list ordered by:");
+				System.out.println("*** Only numbers from 1 to 3 are accepted ***");
+				System.out.println("1 - By ID");
+				System.out.println("2 - By Name");
+				System.out.println("3 - Return to the main Menu");
+				selected = scanner.next();
+			} while (reader.validateThreeOptions(selected) == false);
+
+			if (selected.equals("1")) {
+				database.sortReaderList("id");
+			} else if (selected.equals("2")) {
+				database.sortReaderList("name");
+			} else if (selected.equals("3")) {
+				readerMenu();
+			}
+
 		} else if (option.equals("3")) {
 			System.out.println("--------------------------------------------------------");
 			welcomeMenu();

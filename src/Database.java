@@ -1,6 +1,11 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,13 +20,8 @@ public class Database {
 	Reader reader;
 	Book book;
 	protected ArrayList<Reader> readerList = new ArrayList<Reader>();
+	protected ArrayList<Book> bookList = new ArrayList<Book>();
 	protected Scanner myReader;
-
-	public Database() {
-
-		readReadersFile();
-		readBooksFile();
-	}
 
 	public void readReadersFile() {
 
@@ -47,20 +47,21 @@ public class Database {
 				Node nNode = nodeList.item(counter);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-					String id;
+					int id;
 					String fName;
 					String lName;
 					String email;
 					String phone;
 
 					Element eElement = (Element) nNode;
-					id = eElement.getAttribute("id");
+					id = Integer.parseInt(eElement.getAttribute("id"));
 					fName = eElement.getElementsByTagName("fName").item(0).getTextContent();
 					lName = eElement.getElementsByTagName("lName").item(0).getTextContent();
 					email = eElement.getElementsByTagName("email").item(0).getTextContent();
 					phone = eElement.getElementsByTagName("phone").item(0).getTextContent();
 
 					reader = new Reader(id, fName, lName, email, phone);
+					readerList.add(reader);
 
 				}
 			}
@@ -94,18 +95,19 @@ public class Database {
 				Node nNode = nodeList.item(counter);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-					String id;
+					int id;
 					String title;
 					String author;
 					String year;
 
 					Element eElement = (Element) nNode;
-					id = eElement.getAttribute("id");
+					id = Integer.parseInt(eElement.getAttribute("id"));
 					title = eElement.getElementsByTagName("title").item(0).getTextContent();
 					author = eElement.getElementsByTagName("author").item(0).getTextContent();
 					year = eElement.getElementsByTagName("year").item(0).getTextContent();
 
 					book = new Book(id, title, author, year);
+					bookList.add(book);
 
 				}
 			}
@@ -114,4 +116,103 @@ public class Database {
 
 		}
 	}
+
+	public void sortReaderList(String option) {
+
+		if (option.equals("id")) {
+
+			Collections.sort(readerList, new Comparator<Reader>()
+
+			{
+
+				@Override
+				public int compare(Reader o1, Reader o2) {
+					// TODO Auto-generated method stub
+					return Integer.valueOf(o1.getId()).compareTo(o2.getId());
+				}
+			});
+
+			System.out.println("---------------------------------------------------------------");
+			System.out.println("Here is the list of Readers in your File ordered by ID");
+			for (int count = 0; count < readerList.size(); count++) {
+				System.out.println(readerList.get(count).getId() + "| " + readerList.get(count).getfName() + " "
+						+ readerList.get(count).getlName());
+
+			}
+
+		}
+
+		else if (option.equals("name")) {
+
+			Collections.sort(readerList, new Comparator<Reader>()
+
+			{
+
+				@Override
+				public int compare(Reader o1, Reader o2) {
+					// TODO Auto-generated method stub
+					return String.valueOf(o1.getfName()).compareTo(o2.getfName());
+				}
+			});
+
+			System.out.println("---------------------------------------------------------------");
+			System.out.println("Here is the list of Readers in your File ordered by Name");
+			for (int count = 0; count < readerList.size(); count++) {
+				System.out.println(readerList.get(count).getId() + "| " + readerList.get(count).getfName() + " "
+						+ readerList.get(count).getlName());
+
+			}
+
+		}
+
+	}
+
+	public void sortBooksList(String option) {
+
+		if (option.equals("title")) {
+
+			Collections.sort(bookList, new Comparator<Book>()
+
+			{
+
+				@Override
+				public int compare(Book o1, Book o2) {
+					return String.valueOf(o1.getTitle()).compareTo(o2.getTitle());
+				}
+			});
+
+			System.out.println("---------------------------------------------------------------");
+			System.out.println("Here is the list of Books in your File ordered by Title");
+			for (int count = 0; count < readerList.size(); count++) {
+				System.out.println(bookList.get(count).getId() + "| Book title: " + bookList.get(count).getTitle()
+						+ "| Author: " + bookList.get(count).getAuthor());
+
+			}
+
+		}
+
+		else if (option.equals("author")) {
+
+			Collections.sort(bookList, new Comparator<Book>()
+
+			{
+
+				@Override
+				public int compare(Book o1, Book o2) {
+					return String.valueOf(o1.getAuthor()).compareTo(o2.getAuthor());
+				}
+			});
+
+			System.out.println("---------------------------------------------------------------");
+			System.out.println("Here is the list of Books in your File ordered by Author");
+			for (int count = 0; count < readerList.size(); count++) {
+				System.out.println(bookList.get(count).getId() + "| Author: " + bookList.get(count).getAuthor()
+						+ "| Book title: " + bookList.get(count).getTitle());
+
+			}
+
+		}
+
+	}
+
 }
