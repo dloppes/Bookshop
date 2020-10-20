@@ -12,13 +12,15 @@ import org.w3c.dom.NodeList;
 
 public class Database {
 
-	Reader reader = new Reader();
+	Reader reader;
+	Book book;
 	protected ArrayList<Reader> readerList = new ArrayList<Reader>();
 	protected Scanner myReader;
 
 	public Database() {
 
 		readReadersFile();
+		readBooksFile();
 	}
 
 	public void readReadersFile() {
@@ -57,7 +59,7 @@ public class Database {
 					lName = eElement.getElementsByTagName("lName").item(0).getTextContent();
 					email = eElement.getElementsByTagName("email").item(0).getTextContent();
 					phone = eElement.getElementsByTagName("phone").item(0).getTextContent();
-					
+
 					reader = new Reader(id, fName, lName, email, phone);
 
 				}
@@ -67,7 +69,7 @@ public class Database {
 
 		}
 	}
-	
+
 	public void readBooksFile() {
 
 		/*
@@ -77,7 +79,7 @@ public class Database {
 		 */
 
 		try {
-			File xmlDoc = new File("Readers.xml");
+			File xmlDoc = new File("Books.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(xmlDoc);
@@ -85,7 +87,7 @@ public class Database {
 			// read array of reader elements
 			// this array is called NodeList
 
-			NodeList nodeList = doc.getElementsByTagName("reader");
+			NodeList nodeList = doc.getElementsByTagName("book");
 
 			for (int counter = 0; counter < nodeList.getLength(); counter++) {
 
@@ -93,19 +95,17 @@ public class Database {
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
 					String id;
-					String fName;
-					String lName;
-					String email;
-					String phone;
+					String title;
+					String author;
+					String year;
 
 					Element eElement = (Element) nNode;
 					id = eElement.getAttribute("id");
-					fName = eElement.getElementsByTagName("fName").item(0).getTextContent();
-					lName = eElement.getElementsByTagName("lName").item(0).getTextContent();
-					email = eElement.getElementsByTagName("email").item(0).getTextContent();
-					phone = eElement.getElementsByTagName("phone").item(0).getTextContent();
-					
-					reader = new Reader(id, fName, lName, email, phone);
+					title = eElement.getElementsByTagName("title").item(0).getTextContent();
+					author = eElement.getElementsByTagName("author").item(0).getTextContent();
+					year = eElement.getElementsByTagName("year").item(0).getTextContent();
+
+					book = new Book(id, title, author, year);
 
 				}
 			}

@@ -10,13 +10,13 @@ import java.util.Scanner;
 public class Book {
 
 	Scanner scanner = new Scanner(System.in);
-	protected int id;
+	protected String id;
 	protected String title;
 	protected String author;
-	protected int year;
+	protected String year;
 	protected boolean available;
 
-	public Book(int id, String title, String author,int year) {
+	public Book(String id, String title, String author, String year) {
 
 		/*
 		 * This constructor is used to create the book entity.
@@ -43,6 +43,30 @@ public class Book {
 		}
 		return result;
 
+	}
+
+	public boolean isAvailable() {
+		return available;
+	}
+
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public String getYear() {
+		return year;
 	}
 
 }

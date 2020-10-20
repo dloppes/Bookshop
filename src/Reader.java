@@ -39,4 +39,24 @@ public class Reader {
 		System.out.println("I am glad you are here!");
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public String getfName() {
+		return fName;
+	}
+
+	public String getlName() {
+		return lName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
 }
