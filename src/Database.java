@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,8 +8,19 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
+import javax.lang.model.element.VariableElement;
+import javax.print.Doc;
+import javax.swing.text.html.FormView;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -212,6 +224,42 @@ public class Database {
 			}
 
 		}
+
+	}
+
+	public boolean setBookAsAvailable(String bookName) {
+
+		try {
+			File xmlDoc = new File("Books.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(xmlDoc);
+			doc.normalize();
+
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			String expr = String.format("/books/book[./title='%s']", bookName);
+			NodeList nl = (NodeList) xPath.compile(expr).evaluate(doc, XPathConstants.NODESET);
+			if (nl.getLength() <= 0) {
+
+				return false;
+			}
+			for (int j = 0; j < nl.getLength(); j++) {
+				Element e = (Element) nl.item(j);
+				e.getElementsByTagName("available").item(0).setTextContent("true");
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File("Books.xml"));
+			transformer.transform(source, result);
+
+		} catch (Exception e) {
+
+			System.err.println(e);
+
+		}
+		return true;
 
 	}
 

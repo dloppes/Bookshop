@@ -85,7 +85,21 @@ public class CLI {
 		}
 
 		else if (option.equals("3")) {
-			booksMenu();
+			System.out.println("-----------------------------");
+			System.out.println("Please insert book name:");
+
+			Scanner bookScanner = new Scanner(System.in);
+			String bookName = bookScanner.nextLine();
+
+			if (database.setBookAsAvailable(bookName) == false) {
+
+				System.out.println("Sorry! No book by that name found in the system!");
+				System.out.println("--------------------------------------------------");
+				booksMenu();
+
+			} else {
+				System.out.println("TODO: Report next user waiting for the book that book is available!");
+			}
 		}
 
 		else if (option.equals("4")) {
