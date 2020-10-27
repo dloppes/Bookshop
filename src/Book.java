@@ -1,4 +1,4 @@
-import java.util.Scanner;
+
 
 /**
  * 
@@ -9,14 +9,13 @@ import java.util.Scanner;
 
 public class Book {
 
-	Scanner scanner = new Scanner(System.in);
 	protected int id;
 	protected String title;
 	protected String author;
 	protected String year;
-	protected boolean available;
+	protected boolean available = true;
 
-	public Book(int id, String title, String author, String year) {
+	public Book(int id, String title, String author, String year, boolean available) {
 
 		/*
 		 * This constructor is used to create the book entity.
@@ -26,7 +25,7 @@ public class Book {
 		this.title = title;
 		this.author = author;
 		this.year = year;
-		available = true;
+		this.available = available;
 	}
 
 	public Book() {
@@ -68,5 +67,6 @@ public class Book {
 	public String getYear() {
 		return year;
 	}
+	
 
 }

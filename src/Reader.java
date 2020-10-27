@@ -3,7 +3,6 @@ import java.util.Scanner;
 public class Reader {
 
 	Scanner scanner = new Scanner(System.in);
-	protected Database database = new Database();
 	protected int id;
 	protected String fName;
 	protected String lName;

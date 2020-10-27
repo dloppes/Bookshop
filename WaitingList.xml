@@ -3,9 +3,83 @@
 <Lists>
 
 	<list>
-	<bookID>05</bookID>
-	<readerId>01</readerId>
-	<readerId>05</readerId>
+	<bookId>101</bookId>
+	<title>Invisible Man</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>102</bookId>
+	<title>War and Peace</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>103</bookId>
+	<title>Nineteen Eighty-Four</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>104</bookId>
+	<title>Beloved</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>105</bookId>
+	<title>Broken Glass</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>106</bookId>
+	<title>A Little Life</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>107</bookId>
+	<title>The Tipping Point</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>108</bookId>
+	<title>Darkmans</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>109</bookId>
+	<title>Light</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	</list>
+	
+	<list>
+	<bookId>110</bookId>
+	<title>Visitation</title>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
+	<readerId>0</readerId>
 	</list>
 
 </Lists>

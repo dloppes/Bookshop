@@ -10,8 +10,9 @@ public class CLI {
 	public CLI() {
 		// TODO Auto-generated constructor stub
 
-		database.readBooksFile();
-		database.readReadersFile();
+//		database.readBooksFile();
+//		database.readReadersFile();
+		database.readWaitingListFile();
 		welcomeMenu();
 	}
 
@@ -19,7 +20,7 @@ public class CLI {
 
 		System.out.println("Welcome to the CCT Bookshop! Select one of the options below:");
 		System.out.println("1 - Books");
-		System.out.println("2 -Readers");
+		System.out.println("2 - Readers");
 
 		String input = scanner.next();
 
@@ -112,6 +113,8 @@ public class CLI {
 
 	public void searchBooks() {
 
+		Scanner scBookSearch = new Scanner(System.in);
+
 		System.out.println("How would you like to search by?");
 		System.out.println("1 - Title");
 		System.out.println("2 - Author");
@@ -132,9 +135,52 @@ public class CLI {
 		else if (searchBy.equals("1")) {
 			System.out.println("------------------------");
 			System.out.println("Please insert Title:");
+
+			String bookTitle = scBookSearch.nextLine();
+
+			book = database.searchBook(bookTitle, "title");
+			if (book == null) {
+				System.out.println("------------------------------------------------------------------");
+				System.out.println("Sorry, book " + bookTitle + " is not available at the moment!");
+				System.out.println("Would you like to be added in the waiting list?");
+				System.out.println("1 - Yes");
+				System.out.println("2 - No");
+			} else {
+
+				System.out.println("-----------------------------------");
+				System.out.println("ID: " + book.getId());
+				System.out.println("Title: " + book.getTitle());
+				System.out.println("Author: " + book.getAuthor());
+				System.out.println("-----------------------------------");
+				System.out.println("Would you like to rent it?");
+				System.out.println("1 - Yes");
+				System.out.println("2 - No");
+
+			}
 		} else if (searchBy.equals("2")) {
 			System.out.println("------------------------");
 			System.out.println("Please insert Author:");
+			String bookAuthor = scBookSearch.nextLine();
+
+			book = database.searchBook(bookAuthor, "author");
+			if (book == null) {
+				System.out.println("------------------------------------------------------------------");
+				System.out.println("Sorry, book from " + bookAuthor + " is not available at the moment!");
+				System.out.println("Would you like to be added in the waiting list?");
+				System.out.println("1 - Yes");
+				System.out.println("2 - No");
+			} else {
+
+				System.out.println("-----------------------------------");
+				System.out.println("ID: " + book.getId());
+				System.out.println("Title: " + book.getTitle());
+				System.out.println("Author: " + book.getAuthor());
+				System.out.println("-----------------------------------");
+				System.out.println("Would you like to rent it?");
+				System.out.println("1 - Yes");
+				System.out.println("2 - No");
+
+			}
 		}
 
 		else if (searchBy.equals("3")) {
