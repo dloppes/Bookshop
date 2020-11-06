@@ -23,18 +23,6 @@ public class Reader {
 
 	}
 
-	public boolean validateThreeOptions(String option) {
-
-		boolean result = true;
-
-		if (!option.matches("[1-3]+")) {
-			result = false;
-
-		}
-		return result;
-
-	}
-
 	public int getId() {
 		return id;
 	}

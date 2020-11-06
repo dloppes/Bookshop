@@ -1,4 +1,4 @@
-
+import java.sql.Date;
 
 /**
  * 
@@ -14,6 +14,7 @@ public class Book {
 	protected String author;
 	protected String year;
 	protected boolean available = true;
+	MyLinkedList waitingList;
 
 	public Book(int id, String title, String author, String year, boolean available) {
 
@@ -26,21 +27,10 @@ public class Book {
 		this.author = author;
 		this.year = year;
 		this.available = available;
+
 	}
 
 	public Book() {
-
-	}
-
-	public boolean validateBookMenu(String option) {
-
-		boolean result = true;
-
-		if (!option.matches("[1-4]+")) {
-			result = false;
-
-		}
-		return result;
 
 	}
 
@@ -67,6 +57,46 @@ public class Book {
 	public String getYear() {
 		return year;
 	}
-	
+
+	public MyLinkedList getWaitingList() {
+		return waitingList;
+	}
+
+	public void setWaitingList(MyLinkedList waitingList) {
+		this.waitingList = waitingList;
+	}
+
+	public class RentedBooks {
+
+		protected int readerID;
+		protected int bookID;
+		protected String dateOut;
+		protected String dateIn;
+
+		public RentedBooks(int readerID, int bookID, String dateOut, String dateIn) {
+
+			this.readerID = readerID;
+			this.bookID = bookID;
+			this.dateOut = dateOut;
+			this.dateIn = dateIn;
+		}
+
+		public int getReaderID() {
+			return readerID;
+		}
+
+		public int getBookID() {
+			return bookID;
+		}
+
+		public String getDateOut() {
+			return dateOut;
+		}
+
+		public String getDateIn() {
+			return dateIn;
+		}
+
+	}
 
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<rentedList>
+
+
+	<reader>
+		<id>1</id>
+		<books>
+			<book>
+				<bookID>101</bookID>
+				<dateOut>06/11/20</dateOut>
+				<dateIn></dateIn>
+			</book>
+			<book>
+				<bookID>121</bookID>
+				<dateOut>06/11/20</dateOut>
+				<dateIn></dateIn>
+			</book>
+		</books>
+	</reader>
+
+
+	<reader>
+		<id>2</id>
+		<books></books>
+	</reader>
+
+	<reader>
+		<id>3</id>
+		<books></books>
+	</reader>
+
+	<reader>
+		<id>4</id>
+		<books></books>
+	</reader>
+
+</rentedList>

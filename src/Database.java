@@ -1,8 +1,5 @@
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,10 +20,118 @@ public class Database {
 
 	Reader reader;
 	Book book;
+	Book.RentedBooks rentedBooks;
 	protected ArrayList<Reader> readerList = new ArrayList<Reader>();
 	protected ArrayList<Book> bookList = new ArrayList<Book>();
-	QueueObject waitingListObject = new QueueObject(30);
+	protected ArrayList<Book.RentedBooks> booksLog;
 	protected Scanner myReader;
+	MyLinkedList waitingList;
+
+	public Document documentGenerator(String fileName) {
+
+		Document doc = null;
+		try {
+			File xmlDoc = new File(fileName);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			doc = dBuilder.parse(xmlDoc);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return doc;
+	}
+
+	public boolean searchRentedBooksFile(Reader user) {
+
+		/*
+		 * This method checks for a specific readerID, if find it keeps going, else,returns false. 
+		 * Once found the ID the next step is to see its nodes 
+		 * First the books tag and its child is checked and subsequently the book tag and its child
+		 * Lastly, if there is info it is retrieved, a object is created w/ the info and stored into an array list
+		 */
+
+		Document doc = documentGenerator("RentedBooks.xml");
+
+		try {
+			doc.normalize();
+
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			String expr = String.format("/rentedList/reader[./id='%s']", user.getId());
+			NodeList idNodeList = (NodeList) xPath.compile(expr).evaluate(doc, XPathConstants.NODESET);
+
+			// first Node List is ID
+			for (int counter = 0; counter < idNodeList.getLength(); counter++) {
+
+				Node nNode = idNodeList.item(counter);
+
+				Element eElement = (Element) nNode;
+
+				// Now I have created a NodeList to find the books tags
+				NodeList booksNodeList = eElement.getElementsByTagName("books");
+
+				// checking the length and if the node has any child
+				for (int i = 0; i < booksNodeList.getLength(); i++) {
+					Node booksNode = booksNodeList.item(i);
+
+					if (booksNode.hasChildNodes() == false) {
+						return false;
+					}
+
+					else {
+						
+						//last NodeList to be created to check info is the bookNodeList
+						NodeList bookNodeList = eElement.getElementsByTagName("book");
+
+						for (int j = 0; j < bookNodeList.getLength(); j++) {
+							//the same goes for bookNode. that is where the information we are looking for is.
+							Node bookNode = bookNodeList.item(j);
+
+							if (bookNode.hasChildNodes() == false) {
+								return false;
+							}
+
+							else {
+
+								int bookID = 0;
+								String dateOut = "";
+								String dateIn = "";
+
+								Element eElement0 = (Element) bookNode;
+								bookID = Integer
+										.parseInt(eElement0.getElementsByTagName("bookID").item(0).getTextContent());
+								dateOut = eElement0.getElementsByTagName("dateOut").item(0).getTextContent();
+								dateIn = eElement0.getElementsByTagName("dateIn").item(0).getTextContent();
+
+								rentedBooks = book.new RentedBooks(user.getId(), bookID, dateOut, dateIn);
+
+								booksLog = new ArrayList<>();
+								booksLog.add(rentedBooks);
+
+								for (int count = 0; count < booksLog.size(); count++) {
+
+									System.out.println("------------------------------------------");
+									System.out.println("Reader ID: " + booksLog.get(count).getReaderID());
+									System.out.println("Book ID: " + booksLog.get(count).getBookID());
+									System.out.println("Date out: " + booksLog.get(count).getDateOut());
+									System.out.println("Date in: " + booksLog.get(count).getDateIn());
+
+								}
+
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+
+			System.err.println(e);
+
+		}
+		return true;
+
+	}
 
 	public void readWaitingListFile() {
 
@@ -36,64 +141,93 @@ public class Database {
 		 * object After the object is created I am going to add it into an array.
 		 */
 
-		try {
-			File xmlDoc = new File("WaitingList.xml");
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlDoc);
+		Document doc = documentGenerator("Books.xml");
 
-			// read array of reader elements
-			// this array is called NodeList
+		// read array of reader elements
+		// this array is called NodeList
 
-			NodeList nodeList = doc.getElementsByTagName("list");
-		
+		NodeList nodeList = doc.getElementsByTagName("waitingList");
 
-			for (int counter = 0; counter < nodeList.getLength(); counter++) {
+		for (int counter = 0; counter < nodeList.getLength(); counter++) {
 
-				Node nNode = nodeList.item(counter);
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+			Node nNode = nodeList.item(counter);
+			if (nNode.hasChildNodes() == false)
+				;
 
-					
-					int bookID;
-					int readerID=0;
+			{
+				String empty = "null";
+			}
+			if (nNode.hasChildNodes() == true && nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-					Element eElement = (Element) nNode;
-					bookID = Integer.parseInt(eElement.getElementsByTagName("bookId").item(0).getTextContent());
+				int readerID = 0;
 
-					NodeList nlList = eElement.getElementsByTagName("readerId");
-					
-				
-					for (int i = 0; i < nlList.getLength(); i++) {
+				Element eElement = (Element) nNode;
+				readerID = Integer.parseInt(eElement.getElementsByTagName("readerID").item(0).getTextContent());
 
-						Node nNode1 = nlList.item(i);
-						if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
-							
+				NodeList nlList = eElement.getElementsByTagName("readerId");
 
-							
-							Element eElement0 = (Element) nNode1;
+				for (int i = 0; i < nlList.getLength(); i++) {
 
-							
-							readerID = Integer
-									.parseInt(eElement0.getTextContent());
+					Node nNode1 = nlList.item(i);
+					if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
 
-							waitingListObject.Enqueue(new WaitingListObject(bookID, readerID));
+						Element eElement0 = (Element) nNode1;
 
-						}
-						
+						readerID = Integer.parseInt(eElement0.getTextContent());
+
+						waitingList = new MyLinkedList();
+
+						MyLinkedList.Node nodeElement = waitingList.new Node(searchReaders("", "", "id", readerID));
+						book.getWaitingList().addLast(nodeElement);
+
 					}
-					
 
 				}
 
 			}
-			
-			while(waitingListObject.First() != null) {
-				System.out.println((WaitingListObject) waitingListObject.Dequeue());
-			}
-			
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+
+	}
+
+	public void readBooksFile() {
+
+		/*
+		 * This method will read from the Readers xml file and retrieve the information
+		 * in it. Once I have the information of each reader I can create a reader
+		 * object After the object is created I am going to add it into an array.
+		 */
+
+		Document doc = documentGenerator("Books.xml");
+
+		// read array of reader elements
+		// this array is called NodeList
+
+		NodeList nodeList = doc.getElementsByTagName("book");
+
+		for (int counter = 0; counter < nodeList.getLength(); counter++) {
+
+			Node nNode = nodeList.item(counter);
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+				int id;
+				String title;
+				String author;
+				String year;
+				boolean available;
+
+				Element eElement = (Element) nNode;
+				id = Integer.parseInt(eElement.getAttribute("id"));
+				title = eElement.getElementsByTagName("title").item(0).getTextContent();
+				author = eElement.getElementsByTagName("author").item(0).getTextContent();
+				year = eElement.getElementsByTagName("year").item(0).getTextContent();
+				available = Boolean.parseBoolean(eElement.getElementsByTagName("available").item(0).getTextContent());
+
+				book = new Book(id, title, author, year, available);
+				bookList.add(book);
+
+			}
+
 		}
 
 	}
@@ -106,143 +240,94 @@ public class Database {
 		 * object After the object is created I am going to add it into an array.
 		 */
 
-		try {
-			File xmlDoc = new File("Readers.xml");
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlDoc);
+		Document doc = documentGenerator("Readers.xml");
 
-			// read array of reader elements
-			// this array is called NodeList
+		// read array of reader elements
+		// this array is called NodeList
 
-			NodeList nodeList = doc.getElementsByTagName("reader");
+		NodeList nodeList = doc.getElementsByTagName("reader");
 
-			for (int counter = 0; counter < nodeList.getLength(); counter++) {
+		for (int counter = 0; counter < nodeList.getLength(); counter++) {
 
-				Node nNode = nodeList.item(counter);
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+			Node nNode = nodeList.item(counter);
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-					int id;
-					String fName;
-					String lName;
-					String email;
-					String phone;
+				int id;
+				String fName;
+				String lName;
+				String email;
+				String phone;
 
-					Element eElement = (Element) nNode;
-					id = Integer.parseInt(eElement.getAttribute("id"));
-					fName = eElement.getElementsByTagName("fName").item(0).getTextContent();
-					lName = eElement.getElementsByTagName("lName").item(0).getTextContent();
-					email = eElement.getElementsByTagName("email").item(0).getTextContent();
-					phone = eElement.getElementsByTagName("phone").item(0).getTextContent();
+				Element eElement = (Element) nNode;
+				id = Integer.parseInt(eElement.getAttribute("id"));
+				fName = eElement.getElementsByTagName("fName").item(0).getTextContent();
+				lName = eElement.getElementsByTagName("lName").item(0).getTextContent();
+				email = eElement.getElementsByTagName("email").item(0).getTextContent();
+				phone = eElement.getElementsByTagName("phone").item(0).getTextContent();
 
-					reader = new Reader(id, fName, lName, email, phone);
-					readerList.add(reader);
+				reader = new Reader(id, fName, lName, email, phone);
+				readerList.add(reader);
 
-				}
 			}
-
-		} catch (Exception e) {
-
 		}
-	}
 
-	public void readBooksFile() {
-
-		/*
-		 * This method will read from the Readers xml file and retrieve the information
-		 * in it. Once I have the information of each reader I can create a reader
-		 * object After the object is created I am going to add it into an array.
-		 */
-
-		try {
-			File xmlDoc = new File("Books.xml");
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlDoc);
-
-			// read array of reader elements
-			// this array is called NodeList
-
-			NodeList nodeList = doc.getElementsByTagName("book");
-
-			for (int counter = 0; counter < nodeList.getLength(); counter++) {
-
-				Node nNode = nodeList.item(counter);
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-					int id;
-					String title;
-					String author;
-					String year;
-					boolean available;
-
-					Element eElement = (Element) nNode;
-					id = Integer.parseInt(eElement.getAttribute("id"));
-					title = eElement.getElementsByTagName("title").item(0).getTextContent();
-					author = eElement.getElementsByTagName("author").item(0).getTextContent();
-					year = eElement.getElementsByTagName("year").item(0).getTextContent();
-					available = Boolean
-							.parseBoolean(eElement.getElementsByTagName("available").item(0).getTextContent());
-
-					book = new Book(id, title, author, year, available);
-					bookList.add(book);
-
-				}
-			}
-
-		} catch (Exception e) {
-
-		}
 	}
 
 	public void sortReaderList(String option) {
 
 		if (option.equals("id")) {
 
-			Collections.sort(readerList, new Comparator<Reader>()
+			int n = readerList.size();
+			for (int i = 0; i < n - 1; i++) {
 
-			{
+				for (int j = 0; j < n - 1; j++)
+					if (Integer.valueOf(readerList.get(j).getId()).compareTo(readerList.get(j + 1).getId()) > 0)
 
-				@Override
-				public int compare(Reader o1, Reader o2) {
+					{
+						// swap arr[j+1] and arr[j]
+						Reader temp = readerList.get(j);
+						readerList.set(j, readerList.get(j + 1));
+						readerList.set(j + 1, temp);
+					}
 
-					return Integer.valueOf(o1.getId()).compareTo(o2.getId());
-				}
-			});
+			}
 
 			System.out.println("---------------------------------------------------------------");
-			System.out.println("Here is the list of Readers in your File ordered by ID");
+			System.out.println("Here is the list of Readers in your File ordered by ID:");
+			System.out.println("---------------------------------------------------------------");
+
 			for (int count = 0; count < readerList.size(); count++) {
 				System.out.println(readerList.get(count).getId() + "| " + readerList.get(count).getfName() + " "
 						+ readerList.get(count).getlName());
-
 			}
 
 		}
 
 		else if (option.equals("name")) {
 
-			Collections.sort(readerList, new Comparator<Reader>()
+			int n = readerList.size();
+			for (int i = 0; i < n - 1; i++) {
 
-			{
+				for (int j = 0; j < n - 1; j++)
+					if (String.valueOf(readerList.get(j).getfName()).compareTo(readerList.get(j + 1).getfName()) > 0)
 
-				@Override
-				public int compare(Reader o1, Reader o2) {
-
-					return String.valueOf(o1.getfName()).compareTo(o2.getfName());
-				}
-			});
-
-			System.out.println("---------------------------------------------------------------");
-			System.out.println("Here is the list of Readers in your File ordered by Name");
-			for (
-
-					int count = 0; count < readerList.size(); count++) {
-				System.out.println(readerList.get(count).getId() + "| " + readerList.get(count).getfName() + " "
-						+ readerList.get(count).getlName());
+					{
+						// swap arr[j+1] and arr[j]
+						Reader temp = readerList.get(j);
+						readerList.set(j, readerList.get(j + 1));
+						readerList.set(j + 1, temp);
+					}
 
 			}
 
+			System.out.println("---------------------------------------------------------------");
+			System.out.println("Here is the list of Readers in your File ordered by Name:");
+			System.out.println("---------------------------------------------------------------");
+
+			for (int count = 0; count < readerList.size(); count++) {
+				System.out.println(readerList.get(count).getId() + "| " + readerList.get(count).getfName() + " "
+						+ readerList.get(count).getlName());
+			}
 		}
 
 	}
@@ -251,46 +336,55 @@ public class Database {
 
 		if (option.equals("title")) {
 
-			Collections.sort(bookList, new Comparator<Book>()
+			int n = bookList.size();
+			for (int i = 0; i < n - 1; i++) {
 
-			{
+				for (int j = 0; j < n - 1; j++)
+					if (String.valueOf(bookList.get(j).getTitle()).compareTo(bookList.get(j + 1).getTitle()) > 0)
 
-				@Override
-				public int compare(Book o1, Book o2) {
-					return String.valueOf(o1.getTitle()).compareTo(o2.getTitle());
-				}
-			});
-
-			System.out.println("---------------------------------------------------------------");
-			System.out.println("Here is the list of Books in your File ordered by Title");
-			for (int count = 0; count < readerList.size(); count++) {
-				System.out.println(bookList.get(count).getId() + "| Book title: " + bookList.get(count).getTitle()
-						+ "| Author: " + bookList.get(count).getAuthor());
+					{
+						// swap arr[j+1] and arr[j]
+						Book temp = bookList.get(j);
+						bookList.set(j, bookList.get(j + 1));
+						bookList.set(j + 1, temp);
+					}
 
 			}
 
-		}
+			System.out.println("---------------------------------------------------------------");
+			System.out.println("Here is the list of Books in your File ordered by Title:");
+			System.out.println("---------------------------------------------------------------");
 
-		else if (option.equals("author")) {
+			for (int i = 0; i < n; i++) {
 
-			Collections.sort(bookList, new Comparator<Book>()
+				System.out.println(bookList.get(i).getId() + "| Book title: " + bookList.get(i).getTitle()
+						+ "| Author: " + bookList.get(i).getAuthor());
+			}
 
-			{
+		} else if (option.equals("author")) {
 
-				@Override
-				public int compare(Book o1, Book o2) {
-					return String.valueOf(o1.getAuthor()).compareTo(o2.getAuthor());
-				}
-			});
+			int n = bookList.size();
+			for (int i = 0; i < n - 1; i++) {
+
+				for (int j = 0; j < n - 1; j++)
+					if (String.valueOf(bookList.get(j).getAuthor()).compareTo(bookList.get(j + 1).getAuthor()) > 0)
+
+					{
+						// swap arr[j+1] and arr[j]
+						Book temp = bookList.get(j);
+						bookList.set(j, bookList.get(j + 1));
+						bookList.set(j + 1, temp);
+					}
+
+			}
 
 			System.out.println("---------------------------------------------------------------");
-			System.out.println("Here is the list of Books in your File ordered by Author");
-			for (
+			System.out.println("Here is the list of Books in your File ordered by Title:");
+			System.out.println("---------------------------------------------------------------");
+			for (int i = 0; i < n; i++) {
 
-					int count = 0; count < readerList.size(); count++) {
-				System.out.println(bookList.get(count).getId() + "| Author: " + bookList.get(count).getAuthor()
-						+ "| Book title: " + bookList.get(count).getTitle());
-
+				System.out.println(bookList.get(i).getId() + "| Author: " + bookList.get(i).getAuthor()
+						+ "| Book title: " + bookList.get(i).getTitle());
 			}
 
 		}
@@ -299,11 +393,9 @@ public class Database {
 
 	public boolean setBookAsAvailable(String bookName) {
 
+		Document doc = documentGenerator("Books.xml");
+
 		try {
-			File xmlDoc = new File("Books.xml");
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlDoc);
 			doc.normalize();
 
 			XPath xPath = XPathFactory.newInstance().newXPath();
@@ -349,6 +441,27 @@ public class Database {
 					return book;
 				}
 
+			}
+		}
+		return null;
+	}
+
+	public Reader searchReaders(String firstName, String lastName, String searchBy, int userID) {
+
+		if (searchBy.equals("id")) {
+			for (Reader reader : readerList) {
+
+				if (reader.getId() == userID) {
+					return reader;
+				}
+
+			}
+			return null;
+		} else if (searchBy.equals("name")) {
+			for (Reader reader : readerList) {
+				if (reader.getfName().equals(firstName) && reader.getlName().equals(lastName)) {
+					return reader;
+				}
 			}
 		}
 		return null;

@@ -8,11 +8,10 @@ public class CLI {
 	Reader reader = new Reader();
 
 	public CLI() {
-		// TODO Auto-generated constructor stub
 
-//		database.readBooksFile();
-//		database.readReadersFile();
-		database.readWaitingListFile();
+		database.readReadersFile();
+		database.readBooksFile();
+		// database.readWaitingListFile();
 		welcomeMenu();
 	}
 
@@ -54,12 +53,7 @@ public class CLI {
 
 		String option = scanner.next();
 
-		if (book.validateBookMenu(option) == false) {
-			System.out.println("---------------------------------------------------------------------");
-			System.out.println("Please select a valid option. Only numbers from 1 to 4 are accepted!");
-			booksMenu();
-
-		} else if (option.equals("1")) {
+		if (option.equals("1")) {
 			searchBooks();
 		}
 
@@ -74,7 +68,8 @@ public class CLI {
 				System.out.println("2 - By Author");
 				System.out.println("3 - Return to the main Menu");
 				selected = scanner.next();
-			} while (reader.validateThreeOptions(selected) == false);
+
+			} while (validateThreeOptions(selected) == false);
 
 			if (selected.equals("1")) {
 				database.sortBooksList("title");
@@ -94,8 +89,8 @@ public class CLI {
 
 			if (database.setBookAsAvailable(bookName) == false) {
 
-				System.out.println("Sorry! No book by that name found in the system!");
-				System.out.println("--------------------------------------------------");
+				System.out.println("Sorry! No book by that name has been found in the system!");
+				System.out.println("-----------------------------------------------------------");
 				booksMenu();
 
 			} else {
@@ -109,6 +104,12 @@ public class CLI {
 
 		}
 
+		else {
+			System.out.println("---------------------------------------------------------------------");
+			System.out.println("Please select a valid option. Only numbers from 1 to 4 are accepted!");
+			booksMenu();
+		}
+
 	}
 
 	public void searchBooks() {
@@ -120,19 +121,19 @@ public class CLI {
 		System.out.println("2 - Author");
 		System.out.println("3 - Return to the Main Menu");
 
-		String searchBy = scanner.next();
+		String searchBy = scBookSearch.nextLine();
 
 		/*
 		 * used reader validator in books, because it checks two entries. SO I don`t
 		 * have to recode something that already checks it.
 		 */
-		if (reader.validateThreeOptions(searchBy) == false) {
+		while (validateThreeOptions(searchBy) == false) {
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please select a valid option! Only numbers 1 or 3 are accepted");
 			searchBooks();
 		}
 
-		else if (searchBy.equals("1")) {
+		if (searchBy.equals("1")) {
 			System.out.println("------------------------");
 			System.out.println("Please insert Title:");
 
@@ -140,21 +141,54 @@ public class CLI {
 
 			book = database.searchBook(bookTitle, "title");
 			if (book == null) {
-				System.out.println("------------------------------------------------------------------");
-				System.out.println("Sorry, book " + bookTitle + " is not available at the moment!");
-				System.out.println("Would you like to be added in the waiting list?");
-				System.out.println("1 - Yes");
-				System.out.println("2 - No");
+				String option;
+				do {
+					System.out.println("------------------------------------------------------------------");
+					System.out.println("Sorry, book " + bookTitle + " is not available at the moment!");
+					System.out.println("Would you like to be added in the waiting list?");
+					System.out.println("1 - Yes");
+					System.out.println("2 - No");
+					option = scBookSearch.next();
+				} while (!option.matches("[1-2]+"));
+
+				if (option.equals("1")) {
+					// TODO create method that write into the file
+
+				}
+
+				else {
+					System.out.println("-----------------------------------");
+					System.out.println("You will be sent back to the book Menu");
+					booksMenu();
+				}
 			} else {
 
-				System.out.println("-----------------------------------");
-				System.out.println("ID: " + book.getId());
-				System.out.println("Title: " + book.getTitle());
-				System.out.println("Author: " + book.getAuthor());
-				System.out.println("-----------------------------------");
-				System.out.println("Would you like to rent it?");
-				System.out.println("1 - Yes");
-				System.out.println("2 - No");
+				String option;
+				do {
+					System.out.println("-----------------------------------");
+					System.out.println("ID: " + book.getId());
+					System.out.println("Title: " + book.getTitle());
+					System.out.println("Author: " + book.getAuthor());
+					System.out.println("-----------------------------------");
+					System.out.println("Would you like to rent it?");
+					System.out.println("1 - Yes");
+					System.out.println("2 - No");
+
+					option = scBookSearch.next();
+
+				}
+
+				while (!option.matches("[1-2]+"));
+
+				if (option.equals("1")) {
+					System.out.println("create method to rent title");
+				}
+
+				else {
+					System.out.println("-----------------------------------");
+					System.out.println("You will be sent back to the book Menu");
+					booksMenu();
+				}
 
 			}
 		} else if (searchBy.equals("2")) {
@@ -163,13 +197,36 @@ public class CLI {
 			String bookAuthor = scBookSearch.nextLine();
 
 			book = database.searchBook(bookAuthor, "author");
+
 			if (book == null) {
-				System.out.println("------------------------------------------------------------------");
-				System.out.println("Sorry, book from " + bookAuthor + " is not available at the moment!");
-				System.out.println("Would you like to be added in the waiting list?");
-				System.out.println("1 - Yes");
-				System.out.println("2 - No");
-			} else {
+
+				String option;
+
+				do {
+					System.out.println("------------------------------------------------------------------");
+					System.out.println("Sorry, book from " + bookAuthor + " is not available at the moment!");
+					System.out.println("Would you like to be added in the waiting list?");
+					System.out.println("1 - Yes");
+					System.out.println("2 - No");
+					option = scBookSearch.next();
+				}
+
+				while (!option.matches("[1-2]+"));
+
+				if (option.equals("1")) {
+					// TODO create method that write into the file
+
+				}
+
+				else {
+					System.out.println("-----------------------------------");
+					System.out.println("You will be sent back to the book Menu");
+					booksMenu();
+				}
+
+			}
+
+			else {
 
 				System.out.println("-----------------------------------");
 				System.out.println("ID: " + book.getId());
@@ -179,6 +236,28 @@ public class CLI {
 				System.out.println("Would you like to rent it?");
 				System.out.println("1 - Yes");
 				System.out.println("2 - No");
+
+				String option = scBookSearch.next();
+
+				if (option.equals("1")) {
+
+				}
+
+				else if (option.equals("2")) {
+					System.out.println("-----------------------------------");
+					System.out.println("Okay. You will be sent to the main Menu");
+					System.out.println("-----------------------------------");
+					welcomeMenu();
+
+				}
+
+				else {
+					System.out.println("-----------------------------------");
+					System.out.println("Only numbers 1 or 2 are accepted!");
+
+					searchBooks();
+
+				}
 
 			}
 		}
@@ -200,11 +279,12 @@ public class CLI {
 
 		String option = scanner.next();
 
-		if (reader.validateThreeOptions(option) == false) {
+		if (validateThreeOptions(option) == false) {
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please select a valid option! Only numbers 1 or 3 are accepted");
 			readerMenu();
-		} else if (option.equals("1")) {
+		}
+		if (option.equals("1")) {
 			searchReader();
 		} else if (option.equals("2")) {
 			String selected;
@@ -216,13 +296,18 @@ public class CLI {
 				System.out.println("2 - By Name");
 				System.out.println("3 - Return to the main Menu");
 				selected = scanner.next();
-			} while (reader.validateThreeOptions(selected) == false);
+			} while (validateThreeOptions(selected) == false);
 
 			if (selected.equals("1")) {
 				database.sortReaderList("id");
+				System.out.println("------------------------------------------");
+				readerMenu();
 			} else if (selected.equals("2")) {
 				database.sortReaderList("name");
+				System.out.println("------------------------------------------");
+				readerMenu();
 			} else if (selected.equals("3")) {
+				System.out.println("------------------------------------------");
 				readerMenu();
 			}
 
@@ -230,9 +315,12 @@ public class CLI {
 			System.out.println("--------------------------------------------------------");
 			welcomeMenu();
 		}
+
 	}
 
 	public void searchReader() {
+
+		Scanner scReaderSearch = new Scanner(System.in);
 
 		System.out.println("-----------------------------------");
 		System.out.println("How would you like to search by?");
@@ -240,8 +328,9 @@ public class CLI {
 		System.out.println("2 - Name");
 		System.out.println("3 - Return to the Main Menu");
 
-		String searchBy = scanner.next();
-		if (reader.validateThreeOptions(searchBy) == false) {
+		String searchBy = scReaderSearch.next();
+
+		if (validateThreeOptions(searchBy) == false) {
 
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please select a valid option! Only numbers 1 or 3 are accepted");
@@ -251,17 +340,133 @@ public class CLI {
 		else if (searchBy.equals("1")) {
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please insert ID number:");
+
+			int readerID = scReaderSearch.nextInt();
+
+			reader = database.searchReaders("", "", "id", readerID);
+			if (reader == null) {
+				System.out.println("------------------------------------------------------------------");
+				System.out.println("Sorry, ID " + readerID + " has not been found!");
+				System.out.println("-------------------------------------------------------------------");
+				readerMenu();
+
+			} else {
+
+				System.out.println("-----------------------------------");
+				System.out.println("ID: " + reader.getId());
+				System.out.println("Name: " + reader.getfName() + " " + reader.getlName());
+				System.out.println("-----------------------------------");
+				System.out.println("Would you like to see the titles rented by " + reader.getfName() + " "
+						+ reader.getlName() + "?");
+				System.out.println("1 - Yes");
+				System.out.println("2 - No");
+
+				String option = scReaderSearch.next();
+
+				if (option.equals("1")) {
+
+					if (database.searchRentedBooksFile(reader) == false) {
+						System.out.println(
+								reader.getfName() + " " + reader.getlName() + " has not rented any books yet!");
+
+						readerMenu();
+					}
+
+				}
+
+				else if (option.equals("2")) {
+					System.out.println("-----------------------------------");
+					System.out.println("Okay. You will be sent to the main Menu");
+					System.out.println("-----------------------------------");
+					welcomeMenu();
+
+				}
+
+				else {
+					System.out.println("-----------------------------------");
+					System.out.println("Only numbers 1 or 2 are accepted!");
+
+					searchReader();
+
+				}
+
+			}
 		}
 
 		else if (searchBy.equals("2")) {
 			System.out.println("----------------------------------------------------------------");
-			System.out.println("Please insert Name:");
+			System.out.println("Please insert First Name:");
+			String firstName = scReaderSearch.next();
+			System.out.println("----------------------------------------------------------------");
+			System.out.println("Please insert Last Name:");
+			String lastName = scReaderSearch.next();
+
+			reader = database.searchReaders(firstName, lastName, "name", 0);
+			if (reader == null) {
+				System.out.println("------------------------------------------------------------------");
+				System.out.println("Sorry, name " + firstName + " " + lastName + " has not been found!");
+				System.out.println("-------------------------------------------------------------------");
+				readerMenu();
+
+			} else {
+
+				System.out.println("-----------------------------------");
+				System.out.println("ID: " + reader.getId());
+				System.out.println("Name: " + reader.getfName() + " " + reader.getlName());
+				System.out.println("-----------------------------------");
+				System.out.println("Would you like to see the titles rented by " + reader.getfName() + " "
+						+ reader.getlName() + "?");
+				System.out.println("1 - Yes");
+				System.out.println("2 - No");
+
+				String option = scReaderSearch.next();
+
+				if (option.equals("1")) {
+
+					if (database.searchRentedBooksFile(reader) == false) {
+						System.out.println(
+								reader.getfName() + " " + reader.getlName() + " has not rented any books yet!");
+
+						readerMenu();
+					}
+
+				}
+
+				else if (option.equals("2")) {
+					System.out.println("-----------------------------------");
+					System.out.println("Okay. You will be sent to the main Menu");
+					System.out.println("-----------------------------------");
+					welcomeMenu();
+
+				}
+
+				else {
+					System.out.println("-----------------------------------");
+					System.out.println("Only numbers 1 or 2 are accepted!");
+
+					searchReader();
+
+				}
+
+			}
 		}
 
 		else if (searchBy.equals("3")) {
 			System.out.println("--------------------------------------------------------");
 			welcomeMenu();
 		}
+
+	}
+
+	public boolean validateThreeOptions(String option) {
+
+		boolean result = true;
+
+		if (!option.matches("[1-3]+")) {
+			result = false;
+
+		}
+		return result;
 
 	}
 
