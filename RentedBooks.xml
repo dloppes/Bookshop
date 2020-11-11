@@ -9,10 +9,10 @@
 			<book>
 				<bookID>101</bookID>
 				<dateOut>06/11/20</dateOut>
-				<dateIn></dateIn>
+				<dateIn>10/11/20</dateIn>
 			</book>
 			<book>
-				<bookID>121</bookID>
+				<bookID>102</bookID>
 				<dateOut>06/11/20</dateOut>
 				<dateIn></dateIn>
 			</book>

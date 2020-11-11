@@ -139,8 +139,10 @@ public class CLI {
 
 			String bookTitle = scBookSearch.nextLine();
 
-			book = database.searchBook(bookTitle, "title");
-			if (book == null) {
+			if (database.searchBook(bookTitle) == null) {
+				System.out.println("Sorry title: " + bookTitle + " does not exist in our database!");
+				booksMenu();
+			} else if (database.searchBook(bookTitle).isAvailable() == false) {
 				String option;
 				do {
 					System.out.println("------------------------------------------------------------------");
@@ -165,6 +167,7 @@ public class CLI {
 
 				String option;
 				do {
+					book = database.searchBook(bookTitle);
 					System.out.println("-----------------------------------");
 					System.out.println("ID: " + book.getId());
 					System.out.println("Title: " + book.getTitle());
@@ -196,9 +199,13 @@ public class CLI {
 			System.out.println("Please insert Author:");
 			String bookAuthor = scBookSearch.nextLine();
 
-			book = database.searchBook(bookAuthor, "author");
+			if (database.searchBook(bookAuthor) == null) {
+				System.out.println("Sorry Author: " + bookAuthor + " does not exist in our database!");
+				booksMenu();
+				;
+			}
 
-			if (book == null) {
+			else if (database.searchBook(bookAuthor).isAvailable() == false) {
 
 				String option;
 
@@ -227,7 +234,7 @@ public class CLI {
 			}
 
 			else {
-
+				book = database.searchBook(bookAuthor);
 				System.out.println("-----------------------------------");
 				System.out.println("ID: " + book.getId());
 				System.out.println("Title: " + book.getTitle());
@@ -341,17 +348,15 @@ public class CLI {
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please insert ID number:");
 
-			int readerID = scReaderSearch.nextInt();
+			String readerID = scReaderSearch.next();
 
-			reader = database.searchReaders("", "", "id", readerID);
-			if (reader == null) {
-				System.out.println("------------------------------------------------------------------");
-				System.out.println("Sorry, ID " + readerID + " has not been found!");
-				System.out.println("-------------------------------------------------------------------");
+			if (database.searchReaders("", "", readerID) == null) {
+				System.out.println("Sorry Reader ID: " + readerID + " does not exist in our database!");
 				readerMenu();
+			}
 
-			} else {
-
+			else {
+				reader = database.searchReaders("", "", readerID);
 				System.out.println("-----------------------------------");
 				System.out.println("ID: " + reader.getId());
 				System.out.println("Name: " + reader.getfName() + " " + reader.getlName());
@@ -366,6 +371,7 @@ public class CLI {
 				if (option.equals("1")) {
 
 					if (database.searchRentedBooksFile(reader) == false) {
+
 						System.out.println(
 								reader.getfName() + " " + reader.getlName() + " has not rented any books yet!");
 
@@ -401,15 +407,13 @@ public class CLI {
 			System.out.println("Please insert Last Name:");
 			String lastName = scReaderSearch.next();
 
-			reader = database.searchReaders(firstName, lastName, "name", 0);
-			if (reader == null) {
-				System.out.println("------------------------------------------------------------------");
-				System.out.println("Sorry, name " + firstName + " " + lastName + " has not been found!");
-				System.out.println("-------------------------------------------------------------------");
+			if (database.searchReaders(firstName, lastName, "") == null) {
+				System.out
+						.println("Sorry, name " + firstName + " " + lastName + " have not been found in our database!");
 				readerMenu();
-
 			} else {
 
+				reader = database.searchReaders(firstName, lastName, "");
 				System.out.println("-----------------------------------");
 				System.out.println("ID: " + reader.getId());
 				System.out.println("Name: " + reader.getfName() + " " + reader.getlName());

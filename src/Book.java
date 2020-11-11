@@ -9,14 +9,14 @@ import java.sql.Date;
 
 public class Book {
 
-	protected int id;
+	protected String id;
 	protected String title;
 	protected String author;
 	protected String year;
 	protected boolean available = true;
 	MyLinkedList waitingList;
 
-	public Book(int id, String title, String author, String year, boolean available) {
+	public Book(String id, String title, String author, String year, boolean available) {
 
 		/*
 		 * This constructor is used to create the book entity.
@@ -42,7 +42,7 @@ public class Book {
 		this.available = available;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -68,12 +68,15 @@ public class Book {
 
 	public class RentedBooks {
 
-		protected int readerID;
-		protected int bookID;
+		protected String readerID;
+		protected String bookID;
 		protected String dateOut;
 		protected String dateIn;
 
-		public RentedBooks(int readerID, int bookID, String dateOut, String dateIn) {
+		protected Book book;
+		protected Reader reader;
+
+		public RentedBooks(String readerID, String bookID, String dateOut, String dateIn) {
 
 			this.readerID = readerID;
 			this.bookID = bookID;
@@ -81,11 +84,26 @@ public class Book {
 			this.dateIn = dateIn;
 		}
 
-		public int getReaderID() {
+		public RentedBooks(Book book, Reader reader, String dateOut, String dateIn ) {
+
+			this.book = book;
+			this.reader = reader;
+
+		}
+
+		public Book getBook() {
+			return book;
+		}
+
+		public Reader getReader() {
+			return reader;
+		}
+
+		public String getReaderID() {
 			return readerID;
 		}
 
-		public int getBookID() {
+		public String getBookID() {
 			return bookID;
 		}
 

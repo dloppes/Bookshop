@@ -11,6 +11,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.omg.PortableServer.ServantActivatorHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -23,7 +24,7 @@ public class Database {
 	Book.RentedBooks rentedBooks;
 	protected ArrayList<Reader> readerList = new ArrayList<Reader>();
 	protected ArrayList<Book> bookList = new ArrayList<Book>();
-	protected ArrayList<Book.RentedBooks> booksLog;
+	protected ArrayList<Book.RentedBooks> booksLog = new ArrayList<>();
 	protected Scanner myReader;
 	MyLinkedList waitingList;
 
@@ -46,10 +47,11 @@ public class Database {
 	public boolean searchRentedBooksFile(Reader user) {
 
 		/*
-		 * This method checks for a specific readerID, if find it keeps going, else,returns false. 
-		 * Once found the ID the next step is to see its nodes 
-		 * First the books tag and its child is checked and subsequently the book tag and its child
-		 * Lastly, if there is info it is retrieved, a object is created w/ the info and stored into an array list
+		 * This method checks for a specific readerID, if find it keeps going,
+		 * else,returns false. Once found the ID the next step is to see its nodes First
+		 * the books tag and its child is checked and subsequently the book tag and its
+		 * child Lastly, if there is info it is retrieved, a object is created w/ the
+		 * info and stored into an array list
 		 */
 
 		Document doc = documentGenerator("RentedBooks.xml");
@@ -80,12 +82,13 @@ public class Database {
 					}
 
 					else {
-						
-						//last NodeList to be created to check info is the bookNodeList
+
+						// last NodeList to be created to check info is the bookNodeList
 						NodeList bookNodeList = eElement.getElementsByTagName("book");
 
 						for (int j = 0; j < bookNodeList.getLength(); j++) {
-							//the same goes for bookNode. that is where the information we are looking for is.
+							// the same goes for bookNode. that is where the information we are looking for
+							// is.
 							Node bookNode = bookNodeList.item(j);
 
 							if (bookNode.hasChildNodes() == false) {
@@ -94,19 +97,19 @@ public class Database {
 
 							else {
 
-								int bookID = 0;
+								String bookID = "";
 								String dateOut = "";
 								String dateIn = "";
 
 								Element eElement0 = (Element) bookNode;
-								bookID = Integer
-										.parseInt(eElement0.getElementsByTagName("bookID").item(0).getTextContent());
+								bookID = eElement0.getElementsByTagName("bookID").item(0).getTextContent();
 								dateOut = eElement0.getElementsByTagName("dateOut").item(0).getTextContent();
 								dateIn = eElement0.getElementsByTagName("dateIn").item(0).getTextContent();
 
 								rentedBooks = book.new RentedBooks(user.getId(), bookID, dateOut, dateIn);
 
-								booksLog = new ArrayList<>();
+								ArrayList<Book.RentedBooks> booksLog = new ArrayList<>();
+
 								booksLog.add(rentedBooks);
 
 								for (int count = 0; count < booksLog.size(); count++) {
@@ -159,10 +162,10 @@ public class Database {
 			}
 			if (nNode.hasChildNodes() == true && nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-				int readerID = 0;
+				String readerID = "";
 
 				Element eElement = (Element) nNode;
-				readerID = Integer.parseInt(eElement.getElementsByTagName("readerID").item(0).getTextContent());
+				readerID = eElement.getElementsByTagName("readerID").item(0).getTextContent();
 
 				NodeList nlList = eElement.getElementsByTagName("readerId");
 
@@ -173,11 +176,11 @@ public class Database {
 
 						Element eElement0 = (Element) nNode1;
 
-						readerID = Integer.parseInt(eElement0.getTextContent());
+						readerID = eElement0.getTextContent();
 
 						waitingList = new MyLinkedList();
 
-						MyLinkedList.Node nodeElement = waitingList.new Node(searchReaders("", "", "id", readerID));
+						MyLinkedList.Node nodeElement = waitingList.new Node(searchReaders("","", readerID));
 						book.getWaitingList().addLast(nodeElement);
 
 					}
@@ -210,14 +213,14 @@ public class Database {
 			Node nNode = nodeList.item(counter);
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-				int id;
+				String id;
 				String title;
 				String author;
 				String year;
 				boolean available;
 
 				Element eElement = (Element) nNode;
-				id = Integer.parseInt(eElement.getAttribute("id"));
+				id = eElement.getAttribute("id");
 				title = eElement.getElementsByTagName("title").item(0).getTextContent();
 				author = eElement.getElementsByTagName("author").item(0).getTextContent();
 				year = eElement.getElementsByTagName("year").item(0).getTextContent();
@@ -252,14 +255,14 @@ public class Database {
 			Node nNode = nodeList.item(counter);
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-				int id;
+				String id;
 				String fName;
 				String lName;
 				String email;
 				String phone;
 
 				Element eElement = (Element) nNode;
-				id = Integer.parseInt(eElement.getAttribute("id"));
+				id = eElement.getAttribute("id");
 				fName = eElement.getElementsByTagName("fName").item(0).getTextContent();
 				lName = eElement.getElementsByTagName("lName").item(0).getTextContent();
 				email = eElement.getElementsByTagName("email").item(0).getTextContent();
@@ -281,7 +284,7 @@ public class Database {
 			for (int i = 0; i < n - 1; i++) {
 
 				for (int j = 0; j < n - 1; j++)
-					if (Integer.valueOf(readerList.get(j).getId()).compareTo(readerList.get(j + 1).getId()) > 0)
+					if (String.valueOf(readerList.get(j).getId()).compareTo(readerList.get(j + 1).getId()) > 0)
 
 					{
 						// swap arr[j+1] and arr[j]
@@ -425,44 +428,26 @@ public class Database {
 
 	}
 
-	public Book searchBook(String userInput, String searchBy) {
+	public Book searchBook(String userInput) {
 
-		if (searchBy.equals("title")) {
-			for (Book book : bookList) {
-				if (book.getTitle().equals(userInput) && book.isAvailable() == true) {
-					return book;
-				}
-
-			}
-			return null;
-		} else if (searchBy.equals("author")) {
-			for (Book book : bookList) {
-				if (book.getAuthor().equals(userInput) && book.isAvailable() == true) {
-					return book;
-				}
+		for (Book book : bookList) {
+			if (book.getTitle().equalsIgnoreCase(userInput) || book.getAuthor().equalsIgnoreCase(userInput)) {
+				return book;
 
 			}
 		}
 		return null;
 	}
 
-	public Reader searchReaders(String firstName, String lastName, String searchBy, int userID) {
+	public Reader searchReaders(String firstName, String lastName, String userID) {
 
-		if (searchBy.equals("id")) {
-			for (Reader reader : readerList) {
+		for (Reader reader : readerList) {
 
-				if (reader.getId() == userID) {
-					return reader;
-				}
-
+			if (reader.getId().equals(userID)
+					|| reader.getfName().equalsIgnoreCase(firstName) && reader.getlName().equalsIgnoreCase(lastName)) {
+				return reader;
 			}
-			return null;
-		} else if (searchBy.equals("name")) {
-			for (Reader reader : readerList) {
-				if (reader.getfName().equals(firstName) && reader.getlName().equals(lastName)) {
-					return reader;
-				}
-			}
+
 		}
 		return null;
 	}
