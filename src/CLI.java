@@ -378,6 +378,11 @@ public class CLI {
 						readerMenu();
 					}
 
+					else {
+						readerMenu();
+
+					}
+
 				}
 
 				else if (option.equals("2")) {
@@ -401,6 +406,7 @@ public class CLI {
 
 		else if (searchBy.equals("2")) {
 			System.out.println("----------------------------------------------------------------");
+
 			System.out.println("Please insert First Name:");
 			String firstName = scReaderSearch.next();
 			System.out.println("----------------------------------------------------------------");
@@ -432,6 +438,12 @@ public class CLI {
 								reader.getfName() + " " + reader.getlName() + " has not rented any books yet!");
 
 						readerMenu();
+					}
+
+					else {
+
+						readerMenu();
+
 					}
 
 				}

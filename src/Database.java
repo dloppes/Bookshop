@@ -1,9 +1,14 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -11,11 +16,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.omg.PortableServer.ServantActivatorHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 public class Database {
 
@@ -27,6 +32,135 @@ public class Database {
 	protected ArrayList<Book.RentedBooks> booksLog = new ArrayList<>();
 	protected Scanner myReader;
 	MyLinkedList waitingList;
+
+	public void waitingListFile() {
+
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		try {
+
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document document = dBuilder.newDocument();
+
+			Element root = document.createElement("Books");
+
+			// create book
+			Element bookNode = null;
+
+			// create readers
+			Element readersNode = null;
+
+			// create a loop to create nodes while number of book is not equal to 0
+
+			for (int i = 0; i < bookList.size(); i++) {
+				// create book ID
+				Element bookIDNode = document.createElement("bookID");
+				// code to add text value
+				Text bookIDValue = document.createTextNode(bookList.get(i).getId());
+				// attaching the value to their correspondents nodes
+				bookIDNode.appendChild(bookIDValue);
+
+				bookNode = document.createElement("book");
+				readersNode = document.createElement("readers");
+
+				// adding readers Node with its child nodes to book
+				bookNode.appendChild(bookIDNode);
+				
+				bookNode.appendChild(readersNode);
+
+				// adding bookNode to the root Books
+				root.appendChild(bookNode);
+			}
+
+			// add root to the document
+			document.appendChild(root);
+
+			// write from temp mermory to file
+			// create nguon data
+			DOMSource source = new DOMSource(document);
+			// create result stream
+
+			String path = "WaitingList.xml";
+			File f = new File(path);
+			Result result = new StreamResult(f);
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			try {
+				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.transform(source, result);
+				System.out.println("Data inserted successfuly to the file " + path);
+			} catch (TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void writeToXMLFile(String fileName) {
+
+		Document document = documentGenerator(fileName);
+
+		// Document document = dBuilder.newDocument();
+
+		// create root node rentedList
+
+		Element root = document.createElement("rentedList");
+
+		// create reader
+		Element readerNode = document.createElement("reader");
+
+		// create reader ID
+		Element readerIDNode = document.createElement("id");
+		// code to add text value
+		Text readerIDValue = document.createTextNode("1");
+		// attaching the value to their correspondents nodes
+		readerIDNode.appendChild(readerIDValue);
+
+		// create books
+		Element booksNode = document.createElement("books");
+
+		// create book
+		Element bookNode = document.createElement("book");
+
+		// create bookID
+		Element bookIDNode = document.createElement("bookID");
+
+		// create date out
+		Element dateOutNode = document.createElement("dateOut");
+
+		// create date in
+		Element dateInNode = document.createElement("dateIn");
+
+		// adding book child nodes to book
+		bookNode.appendChild(bookIDNode);
+		bookNode.appendChild(dateOutNode);
+		bookNode.appendChild(dateInNode);
+
+		// adding book with its child nodes to books
+		booksNode.appendChild(bookNode);
+
+		// adding reader ID node to reader node
+		readerNode.appendChild(readerIDNode);
+
+		// adding books Node to my reader
+		readerNode.appendChild(booksNode);
+
+		// adding reader to the root
+		root.appendChild(readerNode);
+
+		/*
+		 * write from temp memory to file create nguon data
+		 */
+		DOMSource source = new DOMSource(document);
+		// create result stream
+		// String path =
+		// Result result = new StreamResult(document);
+
+	}
 
 	public Document documentGenerator(String fileName) {
 
@@ -180,7 +314,7 @@ public class Database {
 
 						waitingList = new MyLinkedList();
 
-						MyLinkedList.Node nodeElement = waitingList.new Node(searchReaders("","", readerID));
+						MyLinkedList.Node nodeElement = waitingList.new Node(searchReaders("", "", readerID));
 						book.getWaitingList().addLast(nodeElement);
 
 					}

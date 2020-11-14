@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Books>
+	<book>
+		<bookID>101</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>102</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>103</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>104</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>105</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>106</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>107</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>108</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>109</bookID>
+		<readers />
+	</book>
+	<book>
+		<bookID>110</bookID>
+		<readers />
+	</book>
+</Books>
