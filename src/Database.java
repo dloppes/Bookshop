@@ -1,4 +1,7 @@
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,6 +13,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
@@ -33,7 +37,108 @@ public class Database {
 	protected Scanner myReader;
 	MyLinkedList waitingList;
 
+	public void saveFile() {
+
+		// Document document = documentGenerator("Books.xml");
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder;
+		try {
+			dBuilder = dbFactory.newDocumentBuilder();
+
+			Document document = dBuilder.newDocument();
+
+			Element root = document.createElement("books");
+
+			// create book
+			Element bookNode = null;
+
+			// create title
+			Element titleNode = null;
+
+			// create author
+			Element authorNode = null;
+
+			// create year
+			Element yearNode = null;
+
+			// create available
+			Element availableNode = null;
+
+			// create waitingList
+			Element waitingListNode = null;
+
+			// create a loop to create nodes while number of book is not equal to 0
+
+			for (int i = 0; i < bookList.size(); i++) {
+
+				bookNode = document.createElement("book");
+
+				// create book ID
+				// Element bookIDNode = document.createElement("bookID");
+				// code to add text value
+				bookNode.setAttribute("id", bookList.get(i).getId());
+				// bookNode.appendChild(bookIDNode);
+
+				titleNode = document.createElement("title");
+				Text titleText = document.createTextNode(bookList.get(i).getTitle());
+				titleNode.appendChild(titleText);
+
+				authorNode = document.createElement("author");
+				Text authorText = document.createTextNode(bookList.get(i).getAuthor());
+				authorNode.appendChild(authorText);
+
+				yearNode = document.createElement("year");
+				Text yearText = document.createTextNode(bookList.get(i).getYear());
+				yearNode.appendChild(yearText);
+
+				availableNode = document.createElement("available");
+				Text availableText = document.createTextNode(Boolean.toString(bookList.get(i).isAvailable()));
+				availableNode.appendChild(availableText);
+
+				waitingListNode = document.createElement("waitingList");
+
+				// appending the values to Book
+				// bookNode.appendChild(bookIDNode);
+				bookNode.appendChild(titleNode);
+				bookNode.appendChild(authorNode);
+				bookNode.appendChild(yearNode);
+				bookNode.appendChild(availableNode);
+				bookNode.appendChild(waitingListNode);
+
+				// adding bookNode to the root Books
+				root.appendChild(bookNode);
+			}
+
+			// add root to the document
+			document.appendChild(root);
+
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+			String path = "Books.xml";
+			File f = new File(path);
+			StreamResult result = new StreamResult(new PrintWriter(new FileOutputStream(f, false)));
+			DOMSource source = new DOMSource(document);
+			transformer.transform(source, result);
+
+		} catch (TransformerFactoryConfigurationError | FileNotFoundException | TransformerException
+				| ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	public void waitingListFile() {
+
+		/*
+		 * This method is a more efficient way of creating the waitingList.xml file. It
+		 * reads the information from the bookList in order to create the exactly amount
+		 * of nodes necessary for it. SO if in the future more readers are added it will
+		 * be updated automatically. However, as there is no add user as part of the
+		 * assignment I could have hard coded it if I wanted
+		 */
 
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		try {
@@ -64,7 +169,7 @@ public class Database {
 
 				// adding readers Node with its child nodes to book
 				bookNode.appendChild(bookIDNode);
-				
+
 				bookNode.appendChild(readersNode);
 
 				// adding bookNode to the root Books
@@ -528,37 +633,17 @@ public class Database {
 
 	}
 
-	public boolean setBookAsAvailable(String bookName) {
+	public boolean setAvailability(String input, boolean isAvailable) {
 
-		Document doc = documentGenerator("Books.xml");
+		for (Book book : bookList) {
 
-		try {
-			doc.normalize();
-
-			XPath xPath = XPathFactory.newInstance().newXPath();
-			String expr = String.format("/books/book[./title='%s']", bookName);
-			NodeList nl = (NodeList) xPath.compile(expr).evaluate(doc, XPathConstants.NODESET);
-			if (nl.getLength() <= 0) {
-
-				return false;
+			if (book.getTitle().equals(input) || book.getId().equals(input)) {
+				book.setAvailable(isAvailable);
+				return true;
 			}
-			for (int j = 0; j < nl.getLength(); j++) {
-				Element e = (Element) nl.item(j);
-				e.getElementsByTagName("available").item(0).setTextContent("true");
-			}
-
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("Books.xml"));
-			transformer.transform(source, result);
-
-		} catch (Exception e) {
-
-			System.err.println(e);
-
 		}
-		return true;
+
+		return false;
 
 	}
 

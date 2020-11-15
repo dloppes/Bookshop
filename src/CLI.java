@@ -87,14 +87,16 @@ public class CLI {
 			Scanner bookScanner = new Scanner(System.in);
 			String bookName = bookScanner.nextLine();
 
-			if (database.setBookAsAvailable(bookName) == false) {
+			if (database.setAvailability(bookName,true) == false) {
 
 				System.out.println("Sorry! No book by that name has been found in the system!");
 				System.out.println("-----------------------------------------------------------");
 				booksMenu();
 
 			} else {
+				database.saveFile();
 				System.out.println("TODO: Report next user waiting for the book that book is available!");
+				welcomeMenu();
 			}
 		}
 
