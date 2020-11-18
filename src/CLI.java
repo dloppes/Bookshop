@@ -11,7 +11,8 @@ public class CLI {
 
 		database.readReadersFile();
 		database.readBooksFile();
-		// database.readWaitingListFile();
+		database.readRentedBooksFile();
+		database.readWaitingListFile();
 		welcomeMenu();
 	}
 
@@ -87,14 +88,14 @@ public class CLI {
 			Scanner bookScanner = new Scanner(System.in);
 			String bookName = bookScanner.nextLine();
 
-			if (database.setAvailability(bookName,true) == false) {
+			if (database.setAvailability(bookName, true) == false) {
 
 				System.out.println("Sorry! No book by that name has been found in the system!");
 				System.out.println("-----------------------------------------------------------");
 				booksMenu();
 
 			} else {
-				database.saveFile();
+				database.saveFile("books");
 				System.out.println("TODO: Report next user waiting for the book that book is available!");
 				welcomeMenu();
 			}
@@ -157,7 +158,17 @@ public class CLI {
 
 				if (option.equals("1")) {
 					// TODO create method that write into the file
+					String readerID;
+					
+					do {
+					System.out.println("Please insert reader ID");
 
+					readerID= scBookSearch.next();
+					}
+					while(database.searchReaders("", "", readerID) == null);
+
+					
+					database.addReaderToWaitingListArray(database.searchReaders("", "", readerID), database.searchBook(bookTitle));
 				}
 
 				else {
@@ -372,7 +383,7 @@ public class CLI {
 
 				if (option.equals("1")) {
 
-					if (database.searchRentedBooksFile(reader) == false) {
+					if (database.searchRentedBooks(reader) == false) {
 
 						System.out.println(
 								reader.getfName() + " " + reader.getlName() + " has not rented any books yet!");
@@ -435,7 +446,7 @@ public class CLI {
 
 				if (option.equals("1")) {
 
-					if (database.searchRentedBooksFile(reader) == false) {
+					if (database.searchRentedBooks(reader) == false) {
 						System.out.println(
 								reader.getfName() + " " + reader.getlName() + " has not rented any books yet!");
 

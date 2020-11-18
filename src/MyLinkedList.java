@@ -20,12 +20,17 @@ public class MyLinkedList {
 		size++;
 	}
 
-	public void addLast(Node newElement) {
-		if (size == 0) {
-			first = newElement;
+	public void addLast(Reader newElement) {
+		
+		Node node = new Node(newElement);
+		if (this.size == 0) {
+			first = node;
+			last = node;
 		}
-		last.setNext(newElement);
-		last = newElement;
+		else {
+		last.setNext(node);
+		last = node;
+		}
 		size++;
 	}
 
@@ -129,7 +134,7 @@ public class MyLinkedList {
 		
 //		@Override 
 //		public String toString() {
-//			return this.id.toString();
+//			return this.getElement().getEmail();
 //		}
 		
 	}

@@ -1,4 +1,3 @@
-import java.sql.Date;
 
 /**
  * 
@@ -9,12 +8,12 @@ import java.sql.Date;
 
 public class Book {
 
-	protected String id;
-	protected String title;
-	protected String author;
-	protected String year;
-	protected boolean available = true;
-	MyLinkedList waitingList;
+	private String id;
+	private String title;
+	private String author;
+	private String year;
+	private boolean available = true;
+	private MyLinkedList waitingList;
 
 	public Book(String id, String title, String author, String year, boolean available) {
 
@@ -27,6 +26,7 @@ public class Book {
 		this.author = author;
 		this.year = year;
 		this.available = available;
+		this.waitingList = new MyLinkedList();
 
 	}
 
@@ -68,26 +68,18 @@ public class Book {
 
 	public class RentedBooks {
 
-		protected String readerID;
-		protected String bookID;
 		protected String dateOut;
 		protected String dateIn;
 
 		protected Book book;
 		protected Reader reader;
 
-		public RentedBooks(String readerID, String bookID, String dateOut, String dateIn) {
-
-			this.readerID = readerID;
-			this.bookID = bookID;
-			this.dateOut = dateOut;
-			this.dateIn = dateIn;
-		}
-
-		public RentedBooks(Book book, Reader reader, String dateOut, String dateIn ) {
+		public RentedBooks(Book book, Reader reader, String dateOut, String dateIn) {
 
 			this.book = book;
 			this.reader = reader;
+			this.dateOut = dateOut;
+			this.dateIn = dateIn;
 
 		}
 
@@ -97,14 +89,6 @@ public class Book {
 
 		public Reader getReader() {
 			return reader;
-		}
-
-		public String getReaderID() {
-			return readerID;
-		}
-
-		public String getBookID() {
-			return bookID;
 		}
 
 		public String getDateOut() {

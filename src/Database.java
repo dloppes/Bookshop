@@ -3,23 +3,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Scanner;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,176 +24,263 @@ public class Database {
 	Reader reader;
 	Book book;
 	Book.RentedBooks rentedBooks;
-	protected ArrayList<Reader> readerList = new ArrayList<Reader>();
-	protected ArrayList<Book> bookList = new ArrayList<Book>();
-	protected ArrayList<Book.RentedBooks> booksLog = new ArrayList<>();
-	protected Scanner myReader;
-	MyLinkedList waitingList;
+	private ArrayList<Reader> readerList = new ArrayList<Reader>();
+	private ArrayList<Book> bookList = new ArrayList<Book>();
+	private ArrayList<Book.RentedBooks> booksLog = new ArrayList<>();
+	
 
-	public void saveFile() {
+	public void addReaderToWaitingListArray(Reader outsideReader, Book outsideBook) {
 
-		// Document document = documentGenerator("Books.xml");
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder;
-		try {
-			dBuilder = dbFactory.newDocumentBuilder();
+		outsideBook.getWaitingList().addLast(outsideReader);
+		
+		System.out.println(outsideBook.getWaitingList().size());
 
-			Document document = dBuilder.newDocument();
-
-			Element root = document.createElement("books");
-
-			// create book
-			Element bookNode = null;
-
-			// create title
-			Element titleNode = null;
-
-			// create author
-			Element authorNode = null;
-
-			// create year
-			Element yearNode = null;
-
-			// create available
-			Element availableNode = null;
-
-			// create waitingList
-			Element waitingListNode = null;
-
-			// create a loop to create nodes while number of book is not equal to 0
-
-			for (int i = 0; i < bookList.size(); i++) {
-
-				bookNode = document.createElement("book");
-
-				// create book ID
-				// Element bookIDNode = document.createElement("bookID");
-				// code to add text value
-				bookNode.setAttribute("id", bookList.get(i).getId());
-				// bookNode.appendChild(bookIDNode);
-
-				titleNode = document.createElement("title");
-				Text titleText = document.createTextNode(bookList.get(i).getTitle());
-				titleNode.appendChild(titleText);
-
-				authorNode = document.createElement("author");
-				Text authorText = document.createTextNode(bookList.get(i).getAuthor());
-				authorNode.appendChild(authorText);
-
-				yearNode = document.createElement("year");
-				Text yearText = document.createTextNode(bookList.get(i).getYear());
-				yearNode.appendChild(yearText);
-
-				availableNode = document.createElement("available");
-				Text availableText = document.createTextNode(Boolean.toString(bookList.get(i).isAvailable()));
-				availableNode.appendChild(availableText);
-
-				waitingListNode = document.createElement("waitingList");
-
-				// appending the values to Book
-				// bookNode.appendChild(bookIDNode);
-				bookNode.appendChild(titleNode);
-				bookNode.appendChild(authorNode);
-				bookNode.appendChild(yearNode);
-				bookNode.appendChild(availableNode);
-				bookNode.appendChild(waitingListNode);
-
-				// adding bookNode to the root Books
-				root.appendChild(bookNode);
-			}
-
-			// add root to the document
-			document.appendChild(root);
-
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-			String path = "Books.xml";
-			File f = new File(path);
-			StreamResult result = new StreamResult(new PrintWriter(new FileOutputStream(f, false)));
-			DOMSource source = new DOMSource(document);
-			transformer.transform(source, result);
-
-		} catch (TransformerFactoryConfigurationError | FileNotFoundException | TransformerException
-				| ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (int i = 0; i < outsideBook.getWaitingList().size(); i++) {
+			System.out.println(outsideBook.getWaitingList().findElementByPosition(i).getElement().getfName() + " "
+					+ outsideBook.getWaitingList().findElementByPosition(i).getElement().getlName());
+			
 		}
 
 	}
 
-	public void waitingListFile() {
-
-		/*
-		 * This method is a more efficient way of creating the waitingList.xml file. It
-		 * reads the information from the bookList in order to create the exactly amount
-		 * of nodes necessary for it. SO if in the future more readers are added it will
-		 * be updated automatically. However, as there is no add user as part of the
-		 * assignment I could have hard coded it if I wanted
-		 */
+	public void saveFile(String fileToSave) {
 
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		try {
+		DocumentBuilder dBuilder;
 
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document document = dBuilder.newDocument();
+		if (fileToSave.equals("books")) {
 
-			Element root = document.createElement("Books");
-
-			// create book
-			Element bookNode = null;
-
-			// create readers
-			Element readersNode = null;
-
-			// create a loop to create nodes while number of book is not equal to 0
-
-			for (int i = 0; i < bookList.size(); i++) {
-				// create book ID
-				Element bookIDNode = document.createElement("bookID");
-				// code to add text value
-				Text bookIDValue = document.createTextNode(bookList.get(i).getId());
-				// attaching the value to their correspondents nodes
-				bookIDNode.appendChild(bookIDValue);
-
-				bookNode = document.createElement("book");
-				readersNode = document.createElement("readers");
-
-				// adding readers Node with its child nodes to book
-				bookNode.appendChild(bookIDNode);
-
-				bookNode.appendChild(readersNode);
-
-				// adding bookNode to the root Books
-				root.appendChild(bookNode);
-			}
-
-			// add root to the document
-			document.appendChild(root);
-
-			// write from temp mermory to file
-			// create nguon data
-			DOMSource source = new DOMSource(document);
-			// create result stream
-
-			String path = "WaitingList.xml";
-			File f = new File(path);
-			Result result = new StreamResult(f);
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			try {
-				Transformer transformer = transformerFactory.newTransformer();
+				dBuilder = dbFactory.newDocumentBuilder();
+
+				Document document = dBuilder.newDocument();
+
+				Element root = document.createElement("books");
+
+				// create book
+				Element bookNode = null;
+
+				// create title
+				Element titleNode = null;
+
+				// create author
+				Element authorNode = null;
+
+				// create year
+				Element yearNode = null;
+
+				// create available
+				Element availableNode = null;
+
+				// create a loop to create nodes while int i is not equal to array size
+
+				for (int i = 0; i < bookList.size(); i++) {
+
+					bookNode = document.createElement("book");
+
+					// create book ID
+					// Element bookIDNode = document.createElement("bookID");
+					// code to add text value
+					bookNode.setAttribute("id", bookList.get(i).getId());
+					// bookNode.appendChild(bookIDNode);
+
+					titleNode = document.createElement("title");
+					Text titleText = document.createTextNode(bookList.get(i).getTitle());
+					titleNode.appendChild(titleText);
+
+					authorNode = document.createElement("author");
+					Text authorText = document.createTextNode(bookList.get(i).getAuthor());
+					authorNode.appendChild(authorText);
+
+					yearNode = document.createElement("year");
+					Text yearText = document.createTextNode(bookList.get(i).getYear());
+					yearNode.appendChild(yearText);
+
+					availableNode = document.createElement("available");
+					Text availableText = document.createTextNode(Boolean.toString(bookList.get(i).isAvailable()));
+					availableNode.appendChild(availableText);
+
+					// appending the values to Book
+					// bookNode.appendChild(bookIDNode);
+					bookNode.appendChild(titleNode);
+					bookNode.appendChild(authorNode);
+					bookNode.appendChild(yearNode);
+					bookNode.appendChild(availableNode);
+
+					// adding bookNode to the root Books
+					root.appendChild(bookNode);
+				}
+
+				// add root to the document
+				document.appendChild(root);
+
+				Transformer transformer = TransformerFactory.newInstance().newTransformer();
 				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
 				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+				String path = "Books.xml";
+				File f = new File(path);
+				StreamResult result = new StreamResult(new PrintWriter(new FileOutputStream(f, false)));
+				DOMSource source = new DOMSource(document);
 				transformer.transform(source, result);
-				System.out.println("Data inserted successfuly to the file " + path);
-			} catch (TransformerException e) {
-				// TODO Auto-generated catch block
+
+			} catch (TransformerFactoryConfigurationError | FileNotFoundException | TransformerException
+					| ParserConfigurationException e) {
+
 				e.printStackTrace();
 			}
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}
+
+		if (fileToSave.equals("rented books")) {
+			try {
+				dBuilder = dbFactory.newDocumentBuilder();
+
+				Document document = dBuilder.newDocument();
+
+				Element root = document.createElement("rentedList");
+
+				// create reader
+				Element readerNode = null;
+
+				// create readerid
+				Element readerIdNode = null;
+
+				// create books
+				Element booksNode = null;
+
+				// create book
+				Element bookNode = null;
+
+				// create bookId
+				Element bookIdNode = null;
+
+				// create dateOut
+				Element dateOutdNode = null;
+
+				// create dateIn
+				Element dateInNode = null;
+
+				// create a loop to create nodes while int i is not equal to array size
+
+				for (int i = 0; i < booksLog.size(); i++) {
+
+					readerNode = document.createElement("reader");
+
+					readerIdNode = document.createElement("id");
+					Text readerIdText = document.createTextNode(booksLog.get(i).getReader().getId());
+					readerIdNode.appendChild(readerIdText);
+
+					booksNode = document.createElement("books");
+
+					bookNode = document.createElement("book");
+
+					bookIdNode = document.createElement("bookId");
+					Text bookIdText = document.createTextNode(booksLog.get(i).getBook().getId());
+					bookIdNode.appendChild(bookIdText);
+
+					dateOutdNode = document.createElement("dateOut");
+					Text dateOutText = document.createTextNode(booksLog.get(i).getDateOut());
+					dateOutdNode.appendChild(dateOutText);
+
+					dateInNode = document.createElement("dateIn");
+					Text dateInText = document.createTextNode(booksLog.get(i).getDateIn());
+					dateInNode.appendChild(dateInText);
+
+					// appending the values to Book
+					bookNode.appendChild(bookIdNode);
+					bookNode.appendChild(dateOutdNode);
+					bookNode.appendChild(dateInNode);
+
+					// appending the values appended to bookNode to books
+					booksNode.appendChild(bookNode);
+
+					// appending the values to Reader
+					readerNode.appendChild(readerIdNode);
+					readerNode.appendChild(booksNode);
+
+					// adding bookNode to the root Books
+					root.appendChild(readerNode);
+				}
+
+				// add root to the document
+				document.appendChild(root);
+
+				Transformer transformer = TransformerFactory.newInstance().newTransformer();
+				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+				String path = "WaitingList.xml";
+				File f = new File(path);
+				StreamResult result = new StreamResult(new PrintWriter(new FileOutputStream(f, false)));
+				DOMSource source = new DOMSource(document);
+				transformer.transform(source, result);
+
+			} catch (TransformerFactoryConfigurationError | FileNotFoundException | TransformerException
+					| ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (fileToSave.equals("Waiting List")) {
+			try {
+				dBuilder = dbFactory.newDocumentBuilder();
+
+				Document document = dBuilder.newDocument();
+
+				Element root = document.createElement("waitingList");
+
+				// create book
+				Element bookNode = null;
+
+				// create readerID
+				Element readerIDNode = null;
+
+				// create a loop to create nodes while int i is not equal to array size
+
+				for (int i = 0; i < bookList.size(); i++) { // TODO DO THE LOOP IN THE RIGHT ARRAY
+
+					bookNode = document.createElement("book");
+
+					// create book ID
+					// Element bookIDNode = document.createElement("bookID");
+					// code to add text value
+					bookNode.setAttribute("id", bookList.get(i).getId()); // *********TODO CHANGE THE VALUE
+					// bookNode.appendChild(bookIDNode);
+
+					// for (int j = 0; j < queueList.size(); j++) { // second loop goes through
+					// waiting list to get
+					// reader id
+
+					readerIDNode = document.createElement("readerID");
+					Text readerIDText = document.createTextNode(
+							bookList.get(i).getWaitingList().findElementByPosition(i).getElement().getId());
+
+					// appending the values to readerIDNode
+					readerIDNode.appendChild(readerIDText);
+					bookNode.appendChild(readerIDNode);
+
+					// adding bookNode to the root Books
+					root.appendChild(bookNode);
+				}
+				// }
+				// add root to the document
+				document.appendChild(root);
+
+				Transformer transformer = TransformerFactory.newInstance().newTransformer();
+				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+				String path = "WaitingList.xml";
+				File f = new File(path);
+				StreamResult result = new StreamResult(new PrintWriter(new FileOutputStream(f, false)));
+				DOMSource source = new DOMSource(document);
+				transformer.transform(source, result);
+
+			} catch (TransformerFactoryConfigurationError | FileNotFoundException | TransformerException
+					| ParserConfigurationException e) {
+
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -283,95 +363,79 @@ public class Database {
 		return doc;
 	}
 
-	public boolean searchRentedBooksFile(Reader user) {
+	public boolean searchRentedBooks(Reader user) {
+
+		boolean hasRentedBook = false;
+		for (Book.RentedBooks data : booksLog) {
+			if (data.getReader().getId().equals(user.getId())) {
+
+				System.out.println("------------------------------------------");
+				System.out.println("Reader ID: " + data.getReader().getId());
+				System.out.println("Book ID: " + data.getBook().getId());
+				System.out.println("Date out: " + data.getDateOut());
+				System.out.println("Date in: " + data.getDateIn());
+
+			}
+			hasRentedBook = true;
+
+		}
+		return hasRentedBook;
+
+	}
+
+	public void readRentedBooksFile() {
 
 		/*
-		 * This method checks for a specific readerID, if find it keeps going,
-		 * else,returns false. Once found the ID the next step is to see its nodes First
-		 * the books tag and its child is checked and subsequently the book tag and its
-		 * child Lastly, if there is info it is retrieved, a object is created w/ the
-		 * info and stored into an array list
+		 * This method will read from the Readers xml file and retrieve the information
+		 * in it. Once I have the information of each reader I can create a reader
+		 * object After the object is created I am going to add it into an array.
 		 */
 
 		Document doc = documentGenerator("RentedBooks.xml");
 
-		try {
-			doc.normalize();
+		String readerID = "";
+		String bookId = "";
+		String dateOut = "";
+		String dateIn = "";
 
-			XPath xPath = XPathFactory.newInstance().newXPath();
-			String expr = String.format("/rentedList/reader[./id='%s']", user.getId());
-			NodeList idNodeList = (NodeList) xPath.compile(expr).evaluate(doc, XPathConstants.NODESET);
+		NodeList readerNodeList = doc.getElementsByTagName("reader");
 
-			// first Node List is ID
-			for (int counter = 0; counter < idNodeList.getLength(); counter++) {
+		for (int counter = 0; counter < readerNodeList.getLength(); counter++) {
 
-				Node nNode = idNodeList.item(counter);
+			Node readerNode = readerNodeList.item(counter);
 
-				Element eElement = (Element) nNode;
+			if (readerNode.hasChildNodes() == true && readerNode.getNodeType() == Node.ELEMENT_NODE) {
 
-				// Now I have created a NodeList to find the books tags
-				NodeList booksNodeList = eElement.getElementsByTagName("books");
+				Element eElement = (Element) readerNode;
+				readerID = eElement.getElementsByTagName("id").item(0).getTextContent();
 
-				// checking the length and if the node has any child
-				for (int i = 0; i < booksNodeList.getLength(); i++) {
-					Node booksNode = booksNodeList.item(i);
+				NodeList bookList = eElement.getElementsByTagName("book");
 
-					if (booksNode.hasChildNodes() == false) {
-						return false;
+				for (int i = 0; i < bookList.getLength(); i++) {
+
+					Node bookNode = bookList.item(i);
+					if (bookNode.getNodeType() == Node.ELEMENT_NODE) {
+
+						Element bookElement = (Element) bookNode;
+
+						bookId = bookElement.getElementsByTagName("bookID").item(0).getTextContent();
+						dateOut = bookElement.getElementsByTagName("dateOut").item(0).getTextContent();
+						dateIn = bookElement.getElementsByTagName("dateIn").item(0).getTextContent();
+
+						book = searchBook(bookId);
+						reader = searchReaders("", "", readerID);
+
+						rentedBooks = book.new RentedBooks(book, reader, dateOut, dateIn);
+
+						booksLog.add(rentedBooks);
+
 					}
 
-					else {
-
-						// last NodeList to be created to check info is the bookNodeList
-						NodeList bookNodeList = eElement.getElementsByTagName("book");
-
-						for (int j = 0; j < bookNodeList.getLength(); j++) {
-							// the same goes for bookNode. that is where the information we are looking for
-							// is.
-							Node bookNode = bookNodeList.item(j);
-
-							if (bookNode.hasChildNodes() == false) {
-								return false;
-							}
-
-							else {
-
-								String bookID = "";
-								String dateOut = "";
-								String dateIn = "";
-
-								Element eElement0 = (Element) bookNode;
-								bookID = eElement0.getElementsByTagName("bookID").item(0).getTextContent();
-								dateOut = eElement0.getElementsByTagName("dateOut").item(0).getTextContent();
-								dateIn = eElement0.getElementsByTagName("dateIn").item(0).getTextContent();
-
-								rentedBooks = book.new RentedBooks(user.getId(), bookID, dateOut, dateIn);
-
-								ArrayList<Book.RentedBooks> booksLog = new ArrayList<>();
-
-								booksLog.add(rentedBooks);
-
-								for (int count = 0; count < booksLog.size(); count++) {
-
-									System.out.println("------------------------------------------");
-									System.out.println("Reader ID: " + booksLog.get(count).getReaderID());
-									System.out.println("Book ID: " + booksLog.get(count).getBookID());
-									System.out.println("Date out: " + booksLog.get(count).getDateOut());
-									System.out.println("Date in: " + booksLog.get(count).getDateIn());
-
-								}
-
-							}
-						}
-					}
 				}
-			}
-		} catch (Exception e) {
 
-			System.err.println(e);
+			}
 
 		}
-		return true;
 
 	}
 
@@ -383,44 +447,37 @@ public class Database {
 		 * object After the object is created I am going to add it into an array.
 		 */
 
-		Document doc = documentGenerator("Books.xml");
+		Document doc = documentGenerator("WaitingList.xml");
 
-		// read array of reader elements
-		// this array is called NodeList
+		String bookID = "";
+		String readerID = "";
 
-		NodeList nodeList = doc.getElementsByTagName("waitingList");
+		NodeList bookNodeList = doc.getElementsByTagName("book");
 
-		for (int counter = 0; counter < nodeList.getLength(); counter++) {
+		for (int bookNodeListCounter = 0; bookNodeListCounter < bookNodeList.getLength(); bookNodeListCounter++) {
 
-			Node nNode = nodeList.item(counter);
-			if (nNode.hasChildNodes() == false)
-				;
+			Node bookNode = bookNodeList.item(bookNodeListCounter);
 
-			{
-				String empty = "null";
-			}
-			if (nNode.hasChildNodes() == true && nNode.getNodeType() == Node.ELEMENT_NODE) {
+			if (bookNode.hasChildNodes() == true && bookNode.getNodeType() == Node.ELEMENT_NODE) {
 
-				String readerID = "";
+				Element bookElement = (Element) bookNode;
+				bookID = bookElement.getAttribute("id");
 
-				Element eElement = (Element) nNode;
-				readerID = eElement.getElementsByTagName("readerID").item(0).getTextContent();
+				NodeList readerIDNodeList = bookElement.getElementsByTagName("readerID");
 
-				NodeList nlList = eElement.getElementsByTagName("readerId");
+				for (int readerIDNodeCounter = 0; readerIDNodeCounter < readerIDNodeList
+						.getLength(); readerIDNodeCounter++) {
 
-				for (int i = 0; i < nlList.getLength(); i++) {
+					Node readerIDNode = readerIDNodeList.item(readerIDNodeCounter);
+					if (readerIDNode.getNodeType() == Node.ELEMENT_NODE) {
 
-					Node nNode1 = nlList.item(i);
-					if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
+						Element readerIDElement = (Element) readerIDNode;
+						readerID = readerIDElement.getTextContent();
 
-						Element eElement0 = (Element) nNode1;
+						book = searchBook(bookID);
+						reader = searchReaders("", "", readerID);
 
-						readerID = eElement0.getTextContent();
-
-						waitingList = new MyLinkedList();
-
-						MyLinkedList.Node nodeElement = waitingList.new Node(searchReaders("", "", readerID));
-						book.getWaitingList().addLast(nodeElement);
+						book.getWaitingList().addLast(reader);
 
 					}
 
@@ -469,7 +526,6 @@ public class Database {
 				bookList.add(book);
 
 			}
-
 		}
 
 	}
@@ -600,7 +656,7 @@ public class Database {
 			for (int i = 0; i < n; i++) {
 
 				System.out.println(bookList.get(i).getId() + "| Book title: " + bookList.get(i).getTitle()
-						+ "| Author: " + bookList.get(i).getAuthor());
+						+ "| Author: " + bookList.get(i).getAuthor() + "| Available: " + bookList.get(i).isAvailable());
 			}
 
 		} else if (option.equals("author")) {
@@ -625,8 +681,9 @@ public class Database {
 			System.out.println("---------------------------------------------------------------");
 			for (int i = 0; i < n; i++) {
 
-				System.out.println(bookList.get(i).getId() + "| Author: " + bookList.get(i).getAuthor()
-						+ "| Book title: " + bookList.get(i).getTitle());
+				System.out
+						.println(bookList.get(i).getId() + "| Author: " + bookList.get(i).getAuthor() + "| Book title: "
+								+ bookList.get(i).getTitle() + "| Available: " + bookList.get(i).isAvailable());
 			}
 
 		}
@@ -650,7 +707,8 @@ public class Database {
 	public Book searchBook(String userInput) {
 
 		for (Book book : bookList) {
-			if (book.getTitle().equalsIgnoreCase(userInput) || book.getAuthor().equalsIgnoreCase(userInput)) {
+			if (book.getTitle().equalsIgnoreCase(userInput) || book.getAuthor().equalsIgnoreCase(userInput)
+					|| book.getId().equals(userInput)) {
 				return book;
 
 			}
