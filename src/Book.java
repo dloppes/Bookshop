@@ -83,6 +83,14 @@ public class Book {
 
 		}
 
+		public void setDateOut(String dateOut) {
+			this.dateOut = dateOut;
+		}
+
+		public void setDateIn(String dateIn) {
+			this.dateIn = dateIn;
+		}
+
 		public Book getBook() {
 			return book;
 		}

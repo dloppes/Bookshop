@@ -1,38 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
 <rentedList>
-
-
-	<reader>
-		<id>1</id>
-		<books>
-			<book>
-				<bookID>101</bookID>
-				<dateOut>06/11/20</dateOut>
-				<dateIn>10/11/20</dateIn>
-			</book>
-			<book>
-				<bookID>102</bookID>
-				<dateOut>06/11/20</dateOut>
-				<dateIn></dateIn>
-			</book>
-		</books>
+	<reader id="1">
+		<book id="101">
+			<dateOut>06/11/20</dateOut>
+			<dateIn>21/11/20</dateIn>
+		</book>
 	</reader>
-
-
-	<reader>
-		<id>2</id>
-		<books></books>
+	<reader id="1">
+		<book id="102">
+			<dateOut>06/11/20</dateOut>
+			<dateIn>21/11/20</dateIn>
+		</book>
 	</reader>
-
-	<reader>
-		<id>3</id>
-		<books></books>
-	</reader>
-
-	<reader>
-		<id>4</id>
-		<books></books>
-	</reader>
-
 </rentedList>

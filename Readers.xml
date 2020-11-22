@@ -3,31 +3,52 @@
 <readers>
 
 	<reader id="1">
-	<fName>Daniel</fName>
-	<lName>Lopes</lName>
-	<email>daniel@cct.ie</email>
-	<phone>083000621</phone>
+		<fName>Daniel</fName>
+		<lName>Lopes</lName>
+		<email>daniel@cct.ie</email>
+		<phone>083000621</phone>
 	</reader>
-	
+
 	<reader id="2">
-	<fName>Mary</fName>
-	<lName>Monroe</lName>
-	<email>mary@cct.ie</email>
-	<phone>0856555161</phone>
+		<fName>Mary</fName>
+		<lName>Monroe</lName>
+		<email>mary@cct.ie</email>
+		<phone>0856555161</phone>
 	</reader>
-	
+
 	<reader id="3">
-	<fName>Elvis</fName>
-	<lName>Presley</lName>
-	<email>elvis@cct.ie</email>
-	<phone>0870489849</phone>
+		<fName>Elvis</fName>
+		<lName>Presley</lName>
+		<email>elvis@cct.ie</email>
+		<phone>0870489849</phone>
 	</reader>
-	
+
 	<reader id="4">
-	<fName>Jean</fName>
-	<lName>Castro</lName>
-	<email>jcastro@cct.ie</email>
-	<phone>08821616155</phone>
-	</reader> 
+		<fName>Jean</fName>
+		<lName>Castro</lName>
+		<email>jcastro@cct.ie</email>
+		<phone>08821616155</phone>
+	</reader>
+
+	<reader id="5">
+		<fName>Thomaz</fName>
+		<lName>Paulo</lName>
+		<email>thomaz@cct.ie</email>
+		<phone>058597949</phone>
+	</reader>
+
+	<reader id="6">
+		<fName>Fiachra</fName>
+		<lName>Macedo</lName>
+		<email>fiachra@cct.ie</email>
+		<phone>0825649849</phone>
+	</reader>
+
+	<reader id="7">
+		<fName>Martin</fName>
+		<lName>Spencer</lName>
+		<email>martin@cct.ie</email>
+		<phone>0875464911</phone>
+	</reader>
 
 </readers>

@@ -2,7 +2,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -13,6 +17,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -27,18 +32,112 @@ public class Database {
 	private ArrayList<Reader> readerList = new ArrayList<Reader>();
 	private ArrayList<Book> bookList = new ArrayList<Book>();
 	private ArrayList<Book.RentedBooks> booksLog = new ArrayList<>();
-	
+
+	public void returnABook(Book outsideBook) {
+
+		// change book attribute isAvailable to true;
+		for (Book book : bookList) {
+
+			// once book has been found, set return date
+			if (book.getId().equals(outsideBook.getId())) {
+				book.setAvailable(true);
+				saveFile("books");
+			}
+		}
+
+		String dateIn = getFormattedDate();
+
+		// find book in the booksLog
+		for (Book.RentedBooks rentedBooks : booksLog) {
+
+			// once book has been found, set return date
+			if (rentedBooks.getBook().getId().equals(outsideBook.getId()) && rentedBooks.getDateIn().isEmpty()) {
+				rentedBooks.setDateIn(dateIn);
+				saveFile("rented books");
+			}
+		}
+
+		try {
+			// find book in the booksLog array and alter information
+			// code to remove the reader waiting for the book from the queue.
+			for (Book book : bookList) {
+				// once book has been found, set return date
+				if (book.getId().equals(outsideBook.getId())) {
+
+					if (book.getWaitingList().isEmpty()) {
+						System.out.println("Thanks for returning the book " + book.getTitle()
+								+ " ! There is nobody waiting for this title at the moment!");
+					}
+
+					reader = book.getWaitingList().findElementByPosition(0).getElement();
+					System.out.println(
+							"---------------------------------------------------------------------------------------------------------");
+					System.out.println("Thanks for returning the book " + book.getTitle() + "!");
+					System.out.println(
+							"---------------------------------------------------------------------------------------------------------");
+					System.out.println("Reader " + reader.getfName() + " " + reader.getlName()
+							+ " is the first in queue waiting for this title!");
+
+					book.getWaitingList().removeFirst();
+
+					// save waiting listArray
+					saveFile("waiting list");
+				}
+			}
+		} catch (NullPointerException nullPointerException) {
+			// this try catch is just to handle the nullPointer of Exception, as I know
+			// waiting list can be empty I don`t want the program to crash.
+		}
+
+	}
+
+	public void rentABook(Reader reader, Book outsideBook) {
+
+		// first change the book attribute isAvailable to false;
+		for (Book book : bookList) {
+
+			// once book has been found, set return date
+			if (book.getId().equals(outsideBook.getId())) {
+				book.setAvailable(false);
+				saveFile("books");
+			}
+		}
+
+		// getting todays date from method
+		String dateOut = getFormattedDate();
+
+		// creating a rented Book object with Reader/Book/dateOut & adding the object to
+		// the array booksLog
+		rentedBooks = book.new RentedBooks(outsideBook, reader, dateOut, "");
+		booksLog.add(rentedBooks);
+
+		// saving new data into RentedBooks XML
+		saveFile("rented books");
+
+	}
+
+	public String getFormattedDate() {
+		String today = "";
+
+		DateFormat df = new SimpleDateFormat("dd/MM/yy");
+		Date date = new Date();
+
+		today = df.format(date);
+
+		return today;
+	}
 
 	public void addReaderToWaitingListArray(Reader outsideReader, Book outsideBook) {
 
-		outsideBook.getWaitingList().addLast(outsideReader);
-		
-		System.out.println(outsideBook.getWaitingList().size());
+		for (Book book : bookList) {
+			// once book has been found, set return date
+			if (book.getId().equals(outsideBook.getId())) {
 
-		for (int i = 0; i < outsideBook.getWaitingList().size(); i++) {
-			System.out.println(outsideBook.getWaitingList().findElementByPosition(i).getElement().getfName() + " "
-					+ outsideBook.getWaitingList().findElementByPosition(i).getElement().getlName());
-			
+				book.getWaitingList().addLast(outsideReader);
+
+				// calling method to save file with the new data.
+				saveFile("waiting list");
+			}
 		}
 
 	}
@@ -142,17 +241,8 @@ public class Database {
 				// create reader
 				Element readerNode = null;
 
-				// create readerid
-				Element readerIdNode = null;
-
-				// create books
-				Element booksNode = null;
-
 				// create book
 				Element bookNode = null;
-
-				// create bookId
-				Element bookIdNode = null;
 
 				// create dateOut
 				Element dateOutdNode = null;
@@ -165,18 +255,10 @@ public class Database {
 				for (int i = 0; i < booksLog.size(); i++) {
 
 					readerNode = document.createElement("reader");
-
-					readerIdNode = document.createElement("id");
-					Text readerIdText = document.createTextNode(booksLog.get(i).getReader().getId());
-					readerIdNode.appendChild(readerIdText);
-
-					booksNode = document.createElement("books");
+					readerNode.setAttribute("id", booksLog.get(i).getReader().getId());
 
 					bookNode = document.createElement("book");
-
-					bookIdNode = document.createElement("bookId");
-					Text bookIdText = document.createTextNode(booksLog.get(i).getBook().getId());
-					bookIdNode.appendChild(bookIdText);
+					bookNode.setAttribute("id", booksLog.get(i).getBook().getId());
 
 					dateOutdNode = document.createElement("dateOut");
 					Text dateOutText = document.createTextNode(booksLog.get(i).getDateOut());
@@ -187,19 +269,15 @@ public class Database {
 					dateInNode.appendChild(dateInText);
 
 					// appending the values to Book
-					bookNode.appendChild(bookIdNode);
 					bookNode.appendChild(dateOutdNode);
 					bookNode.appendChild(dateInNode);
 
-					// appending the values appended to bookNode to books
-					booksNode.appendChild(bookNode);
-
 					// appending the values to Reader
-					readerNode.appendChild(readerIdNode);
-					readerNode.appendChild(booksNode);
+					readerNode.appendChild(bookNode);
 
 					// adding bookNode to the root Books
 					root.appendChild(readerNode);
+
 				}
 
 				// add root to the document
@@ -209,7 +287,7 @@ public class Database {
 				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
 				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-				String path = "WaitingList.xml";
+				String path = "RentedBooks.xml";
 				File f = new File(path);
 				StreamResult result = new StreamResult(new PrintWriter(new FileOutputStream(f, false)));
 				DOMSource source = new DOMSource(document);
@@ -221,7 +299,7 @@ public class Database {
 			}
 		}
 
-		if (fileToSave.equals("Waiting List")) {
+		if (fileToSave.equals("waiting list")) {
 			try {
 				dBuilder = dbFactory.newDocumentBuilder();
 
@@ -237,30 +315,29 @@ public class Database {
 
 				// create a loop to create nodes while int i is not equal to array size
 
-				for (int i = 0; i < bookList.size(); i++) { // TODO DO THE LOOP IN THE RIGHT ARRAY
+				for (int i = 0; i < bookList.size(); i++) {
 
 					bookNode = document.createElement("book");
 
-					// create book ID
-					// Element bookIDNode = document.createElement("bookID");
 					// code to add text value
-					bookNode.setAttribute("id", bookList.get(i).getId()); // *********TODO CHANGE THE VALUE
+					bookNode.setAttribute("id", bookList.get(i).getId());
 					// bookNode.appendChild(bookIDNode);
 
 					// for (int j = 0; j < queueList.size(); j++) { // second loop goes through
 					// waiting list to get
 					// reader id
+					for (int j = 0; j < bookList.get(i).getWaitingList().size(); j++) {
+						readerIDNode = document.createElement("readerID");
+						Text readerIDText = document.createTextNode(
+								bookList.get(i).getWaitingList().findElementByPosition(j).getElement().getId());
 
-					readerIDNode = document.createElement("readerID");
-					Text readerIDText = document.createTextNode(
-							bookList.get(i).getWaitingList().findElementByPosition(i).getElement().getId());
+						// appending the values to readerIDNode
+						readerIDNode.appendChild(readerIDText);
+						bookNode.appendChild(readerIDNode);
 
-					// appending the values to readerIDNode
-					readerIDNode.appendChild(readerIDText);
-					bookNode.appendChild(readerIDNode);
-
-					// adding bookNode to the root Books
-					root.appendChild(bookNode);
+						// adding bookNode to the root Books
+						root.appendChild(bookNode);
+					}
 				}
 				// }
 				// add root to the document
@@ -282,68 +359,6 @@ public class Database {
 				e.printStackTrace();
 			}
 		}
-
-	}
-
-	public void writeToXMLFile(String fileName) {
-
-		Document document = documentGenerator(fileName);
-
-		// Document document = dBuilder.newDocument();
-
-		// create root node rentedList
-
-		Element root = document.createElement("rentedList");
-
-		// create reader
-		Element readerNode = document.createElement("reader");
-
-		// create reader ID
-		Element readerIDNode = document.createElement("id");
-		// code to add text value
-		Text readerIDValue = document.createTextNode("1");
-		// attaching the value to their correspondents nodes
-		readerIDNode.appendChild(readerIDValue);
-
-		// create books
-		Element booksNode = document.createElement("books");
-
-		// create book
-		Element bookNode = document.createElement("book");
-
-		// create bookID
-		Element bookIDNode = document.createElement("bookID");
-
-		// create date out
-		Element dateOutNode = document.createElement("dateOut");
-
-		// create date in
-		Element dateInNode = document.createElement("dateIn");
-
-		// adding book child nodes to book
-		bookNode.appendChild(bookIDNode);
-		bookNode.appendChild(dateOutNode);
-		bookNode.appendChild(dateInNode);
-
-		// adding book with its child nodes to books
-		booksNode.appendChild(bookNode);
-
-		// adding reader ID node to reader node
-		readerNode.appendChild(readerIDNode);
-
-		// adding books Node to my reader
-		readerNode.appendChild(booksNode);
-
-		// adding reader to the root
-		root.appendChild(readerNode);
-
-		/*
-		 * write from temp memory to file create nguon data
-		 */
-		DOMSource source = new DOMSource(document);
-		// create result stream
-		// String path =
-		// Result result = new StreamResult(document);
 
 	}
 
@@ -375,10 +390,11 @@ public class Database {
 				System.out.println("Date out: " + data.getDateOut());
 				System.out.println("Date in: " + data.getDateIn());
 
+				hasRentedBook = true;
 			}
-			hasRentedBook = true;
 
 		}
+
 		return hasRentedBook;
 
 	}
@@ -406,10 +422,10 @@ public class Database {
 
 			if (readerNode.hasChildNodes() == true && readerNode.getNodeType() == Node.ELEMENT_NODE) {
 
-				Element eElement = (Element) readerNode;
-				readerID = eElement.getElementsByTagName("id").item(0).getTextContent();
+				Element readerElement = (Element) readerNode;
+				readerID = readerElement.getAttribute("id");
 
-				NodeList bookList = eElement.getElementsByTagName("book");
+				NodeList bookList = readerElement.getElementsByTagName("book");
 
 				for (int i = 0; i < bookList.getLength(); i++) {
 
@@ -418,7 +434,7 @@ public class Database {
 
 						Element bookElement = (Element) bookNode;
 
-						bookId = bookElement.getElementsByTagName("bookID").item(0).getTextContent();
+						bookId = bookElement.getAttribute("id");
 						dateOut = bookElement.getElementsByTagName("dateOut").item(0).getTextContent();
 						dateIn = bookElement.getElementsByTagName("dateIn").item(0).getTextContent();
 
@@ -656,7 +672,7 @@ public class Database {
 			for (int i = 0; i < n; i++) {
 
 				System.out.println(bookList.get(i).getId() + "| Book title: " + bookList.get(i).getTitle()
-						+ "| Author: " + bookList.get(i).getAuthor() + "| Available: " + bookList.get(i).isAvailable());
+						+ "| Author: " + bookList.get(i).getAuthor());
 			}
 
 		} else if (option.equals("author")) {
@@ -687,20 +703,6 @@ public class Database {
 			}
 
 		}
-
-	}
-
-	public boolean setAvailability(String input, boolean isAvailable) {
-
-		for (Book book : bookList) {
-
-			if (book.getTitle().equals(input) || book.getId().equals(input)) {
-				book.setAvailable(isAvailable);
-				return true;
-			}
-		}
-
-		return false;
 
 	}
 

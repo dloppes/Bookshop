@@ -48,7 +48,7 @@ public class MyLinkedList {
 	}
 
 	public Node findElementByPosition(int position) {
-		if (size == 0 || position >= size - 1) {
+		if (size == 0 || position > size - 1) {
 			return null;
 		}
 		Node current = first;

@@ -1,9 +1,10 @@
+import java.io.InputStream;
 import java.util.Scanner;
 
 public class CLI {
 
 	protected Database database = new Database();
-	Scanner scanner = new Scanner(System.in);
+	// Scanner scanner = new Scanner(System.in);
 	Book book = new Book();
 	Reader reader = new Reader();
 
@@ -18,15 +19,16 @@ public class CLI {
 
 	public void welcomeMenu() {
 
+		Scanner welcomeScanner = new Scanner(System.in);
+
 		System.out.println("Welcome to the CCT Bookshop! Select one of the options below:");
 		System.out.println("1 - Books");
 		System.out.println("2 - Readers");
 
-		String input = scanner.next();
+		String input = welcomeScanner.next();
 
 		if (input.equals("1")) {
 
-			// the value got from the method books menu is stored in the option
 			booksMenu();
 
 		}
@@ -41,9 +43,13 @@ public class CLI {
 			welcomeMenu();
 		}
 
+		welcomeScanner.close();
+
 	}
 
 	public void booksMenu() {
+
+		Scanner bookMenuScanner = new Scanner(System.in);
 
 		System.out.println("-------------------------------");
 		System.out.println("What would you like to do?");
@@ -52,7 +58,7 @@ public class CLI {
 		System.out.println("3 - Set Book as Returned");
 		System.out.println("4 - Return to the Main Menu");
 
-		String option = scanner.next();
+		String option = bookMenuScanner.next();
 
 		if (option.equals("1")) {
 			searchBooks();
@@ -68,14 +74,18 @@ public class CLI {
 				System.out.println("1 - By Title");
 				System.out.println("2 - By Author");
 				System.out.println("3 - Return to the main Menu");
-				selected = scanner.next();
+				selected = bookMenuScanner.next();
 
 			} while (validateThreeOptions(selected) == false);
 
 			if (selected.equals("1")) {
 				database.sortBooksList("title");
+
+				booksMenu();
 			} else if (selected.equals("2")) {
 				database.sortBooksList("author");
+
+				booksMenu();
 			} else if (selected.equals("3")) {
 				booksMenu();
 			}
@@ -83,22 +93,29 @@ public class CLI {
 
 		else if (option.equals("3")) {
 			System.out.println("-----------------------------");
-			System.out.println("Please insert book name:");
+			System.out.println("Please insert book title or book ID:");
 
-			Scanner bookScanner = new Scanner(System.in);
-			String bookName = bookScanner.nextLine();
+			String bookInput = bookMenuScanner.next();
 
-			if (database.setAvailability(bookName, true) == false) {
+			if (database.searchBook(bookInput) == null) {
 
-				System.out.println("Sorry! No book by that name has been found in the system!");
-				System.out.println("-----------------------------------------------------------");
+				System.out.println("Sorry! No book by that name/ID has been found in the system!");
 				booksMenu();
 
-			} else {
-				database.saveFile("books");
-				System.out.println("TODO: Report next user waiting for the book that book is available!");
+			} else if (database.searchBook(bookInput).isAvailable() == true) {
+
+				System.out.println("Sorry! There is no book by this name/ID to be returned!");
+				booksMenu();
+
+			}
+
+			else {
+				book = database.searchBook(bookInput);
+				database.returnABook(book);
+
 				welcomeMenu();
 			}
+
 		}
 
 		else if (option.equals("4")) {
@@ -112,7 +129,7 @@ public class CLI {
 			System.out.println("Please select a valid option. Only numbers from 1 to 4 are accepted!");
 			booksMenu();
 		}
-
+		bookMenuScanner.close();
 	}
 
 	public void searchBooks() {
@@ -157,18 +174,22 @@ public class CLI {
 				} while (!option.matches("[1-2]+"));
 
 				if (option.equals("1")) {
-					// TODO create method that write into the file
+
 					String readerID;
-					
+
 					do {
-					System.out.println("Please insert reader ID");
+						System.out.println("Please insert reader ID");
 
-					readerID= scBookSearch.next();
-					}
-					while(database.searchReaders("", "", readerID) == null);
+						readerID = scBookSearch.next();
+					} while (database.searchReaders("", "", readerID) == null);
 
-					
-					database.addReaderToWaitingListArray(database.searchReaders("", "", readerID), database.searchBook(bookTitle));
+					book = database.searchBook(bookTitle);
+					reader = database.searchReaders("", "", readerID);
+					database.addReaderToWaitingListArray(reader, book);
+
+					System.out.println(
+							reader.getfName() + " " + reader.getlName() + " has been added to the waiting list!");
+					booksMenu();
 				}
 
 				else {
@@ -197,7 +218,22 @@ public class CLI {
 				while (!option.matches("[1-2]+"));
 
 				if (option.equals("1")) {
-					System.out.println("create method to rent title");
+
+					String readerID;
+
+					do {
+						System.out.println("Please insert reader ID");
+
+						readerID = scBookSearch.next();
+					} while (database.searchReaders("", "", readerID) == null);
+
+					reader = database.searchReaders("", "", readerID);
+
+					database.rentABook(reader, book);
+
+					System.out.println("Book " + book.getTitle() + " has been rented to " + reader.getfName() + " "
+							+ reader.getlName());
+					booksMenu();
 				}
 
 				else {
@@ -234,8 +270,22 @@ public class CLI {
 				while (!option.matches("[1-2]+"));
 
 				if (option.equals("1")) {
-					// TODO create method that write into the file
 
+					String readerID;
+
+					do {
+						System.out.println("Please insert reader ID");
+
+						readerID = scBookSearch.next();
+					} while (database.searchReaders("", "", readerID) == null);
+
+					book = database.searchBook(bookAuthor);
+					reader = database.searchReaders("", "", readerID);
+					database.addReaderToWaitingListArray(reader, book);
+
+					System.out.println(
+							reader.getfName() + " " + reader.getlName() + " has been added to the waiting list!");
+					booksMenu();
 				}
 
 				else {
@@ -261,6 +311,21 @@ public class CLI {
 
 				if (option.equals("1")) {
 
+					String readerID;
+
+					do {
+						System.out.println("Please insert reader ID");
+
+						readerID = scBookSearch.next();
+					} while (database.searchReaders("", "", readerID) == null);
+
+					reader = database.searchReaders("", "", readerID);
+
+					database.rentABook(reader, book);
+
+					System.out.println("Book " + book.getTitle() + " has been rented to " + reader.getfName() + " "
+							+ reader.getlName());
+					booksMenu();
 				}
 
 				else if (option.equals("2")) {
@@ -286,10 +351,12 @@ public class CLI {
 			System.out.println("--------------------------------------------------------");
 			welcomeMenu();
 		}
-
+		scBookSearch.close();
 	}
 
 	public void readerMenu() {
+
+		Scanner readerMenuScanner = new Scanner(System.in);
 
 		System.out.println("----------------------------");
 		System.out.println("What would you like to do?");
@@ -297,7 +364,7 @@ public class CLI {
 		System.out.println("2 - List of Readers");
 		System.out.println("3 - Return to the Main Menu");
 
-		String option = scanner.next();
+		String option = readerMenuScanner.next();
 
 		if (validateThreeOptions(option) == false) {
 			System.out.println("----------------------------------------------------------------");
@@ -315,7 +382,7 @@ public class CLI {
 				System.out.println("1 - By ID");
 				System.out.println("2 - By Name");
 				System.out.println("3 - Return to the main Menu");
-				selected = scanner.next();
+				selected = readerMenuScanner.next();
 			} while (validateThreeOptions(selected) == false);
 
 			if (selected.equals("1")) {
@@ -336,6 +403,7 @@ public class CLI {
 			welcomeMenu();
 		}
 
+		readerMenuScanner.close();
 	}
 
 	public void searchReader() {
@@ -484,7 +552,7 @@ public class CLI {
 			System.out.println("--------------------------------------------------------");
 			welcomeMenu();
 		}
-
+		scReaderSearch.close();
 	}
 
 	public boolean validateThreeOptions(String option) {
