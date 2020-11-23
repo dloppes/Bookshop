@@ -1,8 +1,12 @@
-import java.util.Scanner;
 
+/**
+ * 
+ * @author Daniel Lopes
+ *
+ *         Reader entity and all of its particular methods and attributes
+ */
 public class Reader {
 
-	Scanner scanner = new Scanner(System.in);
 	protected String id;
 	protected String fName;
 	protected String lName;

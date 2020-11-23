@@ -1,12 +1,17 @@
-import java.io.InputStream;
 import java.util.Scanner;
 
+/**
+ * 
+ * @author Daniel Lopes
+ *
+ *         CLI (Command Line Interface) or view, codes and methods to redirect
+ *         user accordingly to what he wants to do.
+ */
 public class CLI {
 
-	protected Database database = new Database();
-	// Scanner scanner = new Scanner(System.in);
-	Book book = new Book();
-	Reader reader = new Reader();
+	private Database database = new Database();
+	private Book book;
+	private Reader reader;
 
 	public CLI() {
 
@@ -18,6 +23,12 @@ public class CLI {
 	}
 
 	public void welcomeMenu() {
+
+		/*
+		 * The main welcome Menu will display only Books & Reader as main option After
+		 * user chooses what he wants to see, he will be directly to its correspondent
+		 * view options.
+		 */
 
 		Scanner welcomeScanner = new Scanner(System.in);
 
@@ -143,10 +154,6 @@ public class CLI {
 
 		String searchBy = scBookSearch.nextLine();
 
-		/*
-		 * used reader validator in books, because it checks two entries. SO I don`t
-		 * have to recode something that already checks it.
-		 */
 		while (validateThreeOptions(searchBy) == false) {
 			System.out.println("----------------------------------------------------------------");
 			System.out.println("Please select a valid option! Only numbers 1 or 3 are accepted");
@@ -556,6 +563,11 @@ public class CLI {
 	}
 
 	public boolean validateThreeOptions(String option) {
+
+		/*
+		 * As many times I have to verify three options, this method is created to check
+		 * it and returns a boolean, true if input is correct, otherwise false.
+		 */
 
 		boolean result = true;
 

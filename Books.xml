@@ -52,12 +52,12 @@
 		<title>The tipping Point</title>
 		<author>Malcolm Gladwell</author>
 		<year>2000</year>
-		<available>true</available>
+		<available>false</available>
 	</book>
 	<book id="102">
 		<title>War and Peace</title>
 		<author>Leo Tolstoy</author>
 		<year>1867</year>
-		<available>true</available>
+		<available>false</available>
 	</book>
 </books>

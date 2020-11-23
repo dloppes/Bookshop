@@ -30,10 +30,6 @@ public class Book {
 
 	}
 
-	public Book() {
-
-	}
-
 	public boolean isAvailable() {
 		return available;
 	}
@@ -66,6 +62,7 @@ public class Book {
 		this.waitingList = waitingList;
 	}
 
+	// Inner class
 	public class RentedBooks {
 
 		protected String dateOut;

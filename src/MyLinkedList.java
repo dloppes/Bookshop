@@ -1,3 +1,9 @@
+/**
+ * 
+ * @author Daniel Lopes MyLinkedList defines what kind the operation that my
+ *         nodes do. My innerClass Nodes defines what kind of elements each Node
+ *         will have along with its operations.
+ */
 
 public class MyLinkedList {
 
@@ -21,15 +27,18 @@ public class MyLinkedList {
 	}
 
 	public void addLast(Reader newElement) {
-		
+		/*
+		 * instantiating a node so I can add into it the new Element that is bein passed
+		 * through the parameter.
+		 */
 		Node node = new Node(newElement);
+
 		if (this.size == 0) {
 			first = node;
 			last = node;
-		}
-		else {
-		last.setNext(node);
-		last = node;
+		} else {
+			last.setNext(node);
+			last = node;
 		}
 		size++;
 	}
@@ -105,12 +114,12 @@ public class MyLinkedList {
 		return toReturn;
 
 	}
-	
+
 	public class Node {
 
 		private Reader element;
 		private Node next;
-		
+
 		public Node(Reader element) {
 			this.element = element;
 			this.next = null;
@@ -131,12 +140,7 @@ public class MyLinkedList {
 		public void setNext(Node next) {
 			this.next = next;
 		}
-		
-//		@Override 
-//		public String toString() {
-//			return this.getElement().getEmail();
-//		}
-		
+
 	}
 
 }
