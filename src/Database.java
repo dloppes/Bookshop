@@ -24,6 +24,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+/**
+ * 
+ * @author Daniel Lopes
+ *
+ *         Database class that interacts with all arrays and objects as well as
+ *         the CLI class.
+ */
 public class Database {
 
 	Reader reader;
@@ -35,10 +42,8 @@ public class Database {
 
 	public void returnABook(Book outsideBook) {
 
-		// change book attribute isAvailable to true;
 		for (Book book : bookList) {
-
-			// once book has been found, set return date
+			// change book attribute isAvailable to true;
 			if (book.getId().equals(outsideBook.getId())) {
 				book.setAvailable(true);
 				saveFile("books");
@@ -85,18 +90,19 @@ public class Database {
 				}
 			}
 		} catch (NullPointerException nullPointerException) {
-			// this try catch is just to handle the nullPointer of Exception, as I know
-			// waiting list can be empty I don`t want the program to crash.
+			/*
+			 * this try catch is just to handle the nullPointer of Exception, as I know
+			 * waiting list can be empty I don`t want the program to crash.
+			 */
 		}
 
 	}
 
 	public void rentABook(Reader reader, Book outsideBook) {
 
-		// first change the book attribute isAvailable to false;
 		for (Book book : bookList) {
 
-			// once book has been found, set return date
+			// first change the book attribute isAvailable to false;
 			if (book.getId().equals(outsideBook.getId())) {
 				book.setAvailable(false);
 				saveFile("books");
@@ -106,8 +112,10 @@ public class Database {
 		// getting todays date from method
 		String dateOut = getFormattedDate();
 
-		// creating a rented Book object with Reader/Book/dateOut & adding the object to
-		// the array booksLog
+		/*
+		 * creating a rented Book object with Reader/Book/dateOut & adding the object to
+		 * the array booksLog
+		 */
 		rentedBooks = book.new RentedBooks(outsideBook, reader, dateOut, "");
 		booksLog.add(rentedBooks);
 
@@ -117,6 +125,10 @@ public class Database {
 	}
 
 	public String getFormattedDate() {
+		/*
+		 * this method will return today`s date as String. It will be called to set date
+		 * when book is rented as well when it is returned
+		 */
 		String today = "";
 
 		DateFormat df = new SimpleDateFormat("dd/MM/yy");
@@ -129,8 +141,13 @@ public class Database {
 
 	public void addReaderToWaitingListArray(Reader outsideReader, Book outsideBook) {
 
+		/*
+		 * This method handles the searching for the book in the array bookList and
+		 * insertion of reader to its waiting list
+		 */
+
 		for (Book book : bookList) {
-			// once book has been found, set return date
+
 			if (book.getId().equals(outsideBook.getId())) {
 
 				book.getWaitingList().addLast(outsideReader);
@@ -143,6 +160,11 @@ public class Database {
 	}
 
 	public void saveFile(String fileToSave) {
+
+		/*
+		 * Method to save updates to the xml File, this method receives the name of the
+		 * file I want to save the information to.
+		 */
 
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder;
@@ -323,9 +345,10 @@ public class Database {
 					bookNode.setAttribute("id", bookList.get(i).getId());
 					// bookNode.appendChild(bookIDNode);
 
-					// for (int j = 0; j < queueList.size(); j++) { // second loop goes through
-					// waiting list to get
-					// reader id
+					/*
+					 * second loop to iterate through the waiting list within each book, so I can
+					 * get the reader id
+					 */
 					for (int j = 0; j < bookList.get(i).getWaitingList().size(); j++) {
 						readerIDNode = document.createElement("readerID");
 						Text readerIDText = document.createTextNode(
@@ -339,7 +362,7 @@ public class Database {
 						root.appendChild(bookNode);
 					}
 				}
-				// }
+
 				// add root to the document
 				document.appendChild(root);
 
@@ -363,6 +386,11 @@ public class Database {
 	}
 
 	public Document documentGenerator(String fileName) {
+
+		/*
+		 * This method is responsible for generating a Document as it will be used
+		 * multiple times
+		 */
 
 		Document doc = null;
 		try {
@@ -458,9 +486,9 @@ public class Database {
 	public void readWaitingListFile() {
 
 		/*
-		 * This method will read from the Readers xml file and retrieve the information
-		 * in it. Once I have the information of each reader I can create a reader
-		 * object After the object is created I am going to add it into an array.
+		 * This method will read from the Waiting List xml file and retrieve the
+		 * information in it. Once I have the information of each reader I can create a
+		 * reader object After the object is created I am going to add it into an array.
 		 */
 
 		Document doc = documentGenerator("WaitingList.xml");
@@ -508,9 +536,9 @@ public class Database {
 	public void readBooksFile() {
 
 		/*
-		 * This method will read from the Readers xml file and retrieve the information
-		 * in it. Once I have the information of each reader I can create a reader
-		 * object After the object is created I am going to add it into an array.
+		 * This method will read from the Books xml file and retrieve the information in
+		 * it. Once I have the information of each reader I can create a reader object
+		 * After the object is created I am going to add it into an array.
 		 */
 
 		Document doc = documentGenerator("Books.xml");
@@ -589,23 +617,31 @@ public class Database {
 
 	public void sortReaderList(String option) {
 
+		/*
+		 * linear search
+		 * 
+		 * The same method will check for id or name
+		 */
+
 		if (option.equals("id")) {
 
 			int n = readerList.size();
 			for (int i = 0; i < n - 1; i++) {
 
-				for (int j = 0; j < n - 1; j++)
-					if (String.valueOf(readerList.get(j).getId()).compareTo(readerList.get(j + 1).getId()) > 0)
+				for (int j = 0; j < n - 1; j++) {
+					int readerID = Integer.parseInt(readerList.get(j).getId());
+					int readerIDCompare = Integer.parseInt(readerList.get(j + 1).getId());
 
-					{
+					if (readerID > readerIDCompare) {
 						// swap arr[j+1] and arr[j]
 						Reader temp = readerList.get(j);
 						readerList.set(j, readerList.get(j + 1));
 						readerList.set(j + 1, temp);
 					}
 
-			}
+				}
 
+			}
 			System.out.println("---------------------------------------------------------------");
 			System.out.println("Here is the list of Readers in your File ordered by ID:");
 			System.out.println("---------------------------------------------------------------");
@@ -647,6 +683,12 @@ public class Database {
 	}
 
 	public void sortBooksList(String option) {
+
+		/*
+		 * linear search
+		 * 
+		 * The same method will check for title or author
+		 */
 
 		if (option.equals("title")) {
 
@@ -708,6 +750,11 @@ public class Database {
 
 	public Book searchBook(String userInput) {
 
+		/*
+		 * this method returns null if book has not been found. it means that the title,
+		 * author or id inserted is invalid
+		 */
+
 		for (Book book : bookList) {
 			if (book.getTitle().equalsIgnoreCase(userInput) || book.getAuthor().equalsIgnoreCase(userInput)
 					|| book.getId().equals(userInput)) {
@@ -719,6 +766,11 @@ public class Database {
 	}
 
 	public Reader searchReaders(String firstName, String lastName, String userID) {
+
+		/*
+		 * this method returns null if reader has not been found. it means that the
+		 * reader first Name, Last Name, or id inserted is invalid
+		 */
 
 		for (Reader reader : readerList) {
 
