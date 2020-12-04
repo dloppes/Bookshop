@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.text.html.FormView;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -146,17 +147,48 @@ public class Database {
 		 * insertion of reader to its waiting list
 		 */
 
-		for (Book book : bookList) {
+		// this first part I check to see if user is already in the waiting list
+		if (isAlreadyInTheList(outsideBook, outsideReader) == true) {
+			System.out.println("Reader: " + outsideReader.getfName() + " " + outsideReader.getlName()
+					+ " is already in the waiting list of this book!");
 
-			if (book.getId().equals(outsideBook.getId())) {
+		} else {
+			for (Book book : bookList) {
 
-				book.getWaitingList().addLast(outsideReader);
+				if (book.getId().equals(outsideBook.getId())) {
 
-				// calling method to save file with the new data.
-				saveFile("waiting list");
+					book.getWaitingList().addLast(outsideReader);
+
+					System.out.println(outsideReader.getfName() + " " + outsideReader.getlName()
+							+ " has been added to the waiting list!");
+
+					// calling method to save file with the new data.
+					saveFile("waiting list");
+				}
 			}
 		}
 
+	}
+
+	public boolean isAlreadyInTheList(Book book, Reader reader) {
+
+		/*
+		 * this method will find the book in the bookList, get into its waiting list and
+		 * see if the reader trying to be added to the waiting list already exists.
+		 */
+
+		for (Book bookSearched : bookList) {
+			if (bookSearched.getId().equals(book.getId())) {
+				for (int i = 0; i < bookSearched.getWaitingList().size(); i++) {
+					if (bookSearched.getWaitingList().findElementByPosition(i).getElement().getId()
+							.equals(reader.getId())) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public void saveFile(String fileToSave) {

@@ -6,12 +6,6 @@
 			<dateIn>21/11/20</dateIn>
 		</book>
 	</reader>
-	<reader id="1">
-		<book id="102">
-			<dateOut>06/11/20</dateOut>
-			<dateIn />
-		</book>
-	</reader>
 	<reader id="7">
 		<book id="107">
 			<dateOut>23/11/20</dateOut>

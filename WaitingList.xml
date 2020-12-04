@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <waitingList>
-	<book id="101">
-		<readerID>1</readerID>
-	</book>
-	<book id="102">
-		<readerID>2</readerID>
-	</book>
+<book id="107">
+<readerID>1</readerID>
+</book>
+<book id="102">
+<readerID>2</readerID>
+</book>
 </waitingList>

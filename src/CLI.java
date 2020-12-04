@@ -194,9 +194,8 @@ public class CLI {
 					reader = database.searchReaders("", "", readerID);
 					database.addReaderToWaitingListArray(reader, book);
 
-					System.out.println(
-							reader.getfName() + " " + reader.getlName() + " has been added to the waiting list!");
 					booksMenu();
+
 				}
 
 				else {
